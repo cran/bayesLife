@@ -1,0 +1,354 @@
+i
+widget.defaults[[par]][i]
+centers
+ls(e)
+detach(package:bayesDem, unload=TRUE)#
+detach(package:bayesLife, unload=TRUE)#
+detach(package:bayesTFR, unload=TRUE)#
+library(bayesDem)
+bayesDem.go()
+load('last.dump.rda'); debugger()
+detach(package:bayesDem, unload=TRUE)#
+detach(package:bayesLife, unload=TRUE)#
+detach(package:bayesTFR, unload=TRUE)#
+library(bayesDem)
+bayesDem.go()
+load('last.dump.rda'); debugger()
+help(addChangehandler)
+help(addHandlerChanged)
+detach(package:bayesDem, unload=TRUE)#
+detach(package:bayesLife, unload=TRUE)#
+detach(package:bayesTFR, unload=TRUE)#
+library(bayesDem)
+bayesDem.go()
+detach(package:bayesDem, unload=TRUE)#
+detach(package:bayesLife, unload=TRUE)#
+detach(package:bayesTFR, unload=TRUE)#
+library(bayesDem)
+bayesDem.go()
+load('last.dump.rda'); debugger()
+par
+load('last.dump.rda'); debugger()
+par
+detach(package:bayesDem, unload=TRUE)#
+detach(package:bayesLife, unload=TRUE)#
+detach(package:bayesTFR, unload=TRUE)#
+library(bayesDem)
+bayesDem.go()
+load('last.dump.rda'); debugger()
+par
+linked.pars.list[[par]][[i]]
+load('last.dump.rda'); debugger()
+ls()
+h2
+i
+names(params)
+par
+params[[a]]
+params$a
+params$Triangle.ini
+length(params$Triangle.ini)
+nchar(params$Triangle.ini)
+detach(package:bayesDem, unload=TRUE)#
+detach(package:bayesLife, unload=TRUE)#
+detach(package:bayesTFR, unload=TRUE)#
+library(bayesDem)
+bayesDem.go()
+load('last.dump.rda'); debugger()
+par
+detach(package:bayesDem, unload=TRUE)#
+detach(package:bayesLife, unload=TRUE)#
+detach(package:bayesTFR, unload=TRUE)#
+library(bayesDem)
+bayesDem.go()
+load('last.dump.rda'); debugger()
+this.par.list
+i
+detach(package:bayesDem, unload=TRUE)#
+detach(package:bayesLife, unload=TRUE)#
+detach(package:bayesTFR, unload=TRUE)#
+library(bayesDem)
+bayesDem.go()
+load('last.dump.rda'); debugger()
+par
+detach(package:bayesDem, unload=TRUE)#
+detach(package:bayesLife, unload=TRUE)#
+detach(package:bayesTFR, unload=TRUE)#
+library(bayesDem)
+bayesDem.go()
+load('last.dump.rda'); debugger()
+par
+this.par.list[[par]]
+length(this.par.list[[par]])
+is.list(this.par.list[[par]])
+detach(package:bayesDem, unload=TRUE)#
+detach(package:bayesLife, unload=TRUE)#
+detach(package:bayesTFR, unload=TRUE)#
+library(bayesDem)
+bayesDem.go()
+load('last.dump.rda'); debugger()
+par
+3
+par.names
+par
+detach(package:bayesDem, unload=TRUE)#
+detach(package:bayesLife, unload=TRUE)#
+detach(package:bayesTFR, unload=TRUE)#
+library(bayesDem)
+bayesDem.go()
+load('last.dump.rda'); debugger()
+par
+detach(package:bayesDem, unload=TRUE)#
+detach(package:bayesLife, unload=TRUE)#
+detach(package:bayesTFR, unload=TRUE)#
+library(bayesDem)
+bayesDem.go()
+load('last.dump.rda'); debugger()
+par
+is.list(NULL)
+a<-c(NULL, NULL, NULL)
+a
+detach(package:bayesDem, unload=TRUE)#
+detach(package:bayesLife, unload=TRUE)#
+detach(package:bayesTFR, unload=TRUE)#
+library(bayesDem)
+bayesDem.go()
+load('last.dump.rda'); debugger()
+par
+help(union)
+a
+a[1] <- 1
+a<-c()
+a[1] <- 1
+a
+a[2] <- 1
+detach(package:bayesDem, unload=TRUE)#
+detach(package:bayesLife, unload=TRUE)#
+detach(package:bayesTFR, unload=TRUE)#
+library(bayesDem)
+bayesDem.go()
+load('last.dump.rda'); debugger()
+par
+item
+i
+value
+detach(package:bayesDem, unload=TRUE)#
+detach(package:bayesLife, unload=TRUE)#
+detach(package:bayesTFR, unload=TRUE)#
+library(bayesDem)
+bayesDem.go()
+load('last.dump.rda'); debugger()
+par
+this.par.tuple
+is.list(this.pars.tuple[[par]][[item]])
+is.list(this.par.tuple[[par]][[item]])
+params[[par]]
+item
+this.par.tuple[[par]][item]
+svalue(this.par.tuple[[par]][[item]])
+detach(package:bayesDem, unload=TRUE)#
+detach(package:bayesLife, unload=TRUE)#
+detach(package:bayesTFR, unload=TRUE)#
+library(bayesDem)
+bayesDem.go()
+load('last.dump.rda'); debugger()
+par
+detach(package:bayesDem, unload=TRUE)#
+detach(package:bayesLife, unload=TRUE)#
+detach(package:bayesTFR, unload=TRUE)#
+library(bayesDem)
+bayesDem.go()
+load('last.dump.rda'); debugger()
+i
+length(h$action$env$widget.value.pairs)
+h$action$env$widget.value.pairs[[i]]
+h$action$env$widget.value.pairs
+detach(package:bayesDem, unload=TRUE)#
+detach(package:bayesLife, unload=TRUE)#
+detach(package:bayesTFR, unload=TRUE)#
+library(bayesDem)
+bayesDem.go()
+load('last.dump.rda'); debugger()
+h$action$env$widget.value.pairs
+i
+bayesDem.go()
+detach(package:bayesDem, unload=TRUE)#
+detach(package:bayesLife, unload=TRUE)#
+detach(package:bayesTFR, unload=TRUE)#
+library(bayesDem)
+bayesDem.go()
+load('last.dump.rda'); debugger()
+i
+detach(package:bayesDem, unload=TRUE)#
+detach(package:bayesLife, unload=TRUE)#
+detach(package:bayesTFR, unload=TRUE)#
+library(bayesDem)
+bayesDem.go()
+detach(package:bayesDem, unload=TRUE)#
+detach(package:bayesLife, unload=TRUE)#
+detach(package:bayesTFR, unload=TRUE)#
+library(bayesDem)
+bayesDem.go()
+detach(package:bayesDem, unload=TRUE)#
+detach(package:bayesLife, unload=TRUE)#
+detach(package:bayesTFR, unload=TRUE)#
+library(bayesDem)
+bayesDem.go()
+detach(package:bayesDem, unload=TRUE)#
+detach(package:bayesLife, unload=TRUE)#
+detach(package:bayesTFR, unload=TRUE)#
+library(bayesDem)
+bayesDem.go()
+load('last.dump.rda'); debugger()
+detach(package:bayesDem, unload=TRUE)#
+detach(package:bayesLife, unload=TRUE)#
+detach(package:bayesTFR, unload=TRUE)#
+library(bayesDem)
+bayesDem.go()
+load('last.dump.rda'); debugger()
+names(h$action$env$adv.set.env$widget.defaults)
+detach(package:bayesDem, unload=TRUE)#
+detach(package:bayesLife, unload=TRUE)#
+detach(package:bayesTFR, unload=TRUE)#
+library(bayesDem)
+bayesDem.go()
+detach(package:bayesDem, unload=TRUE)#
+detach(package:bayesLife, unload=TRUE)#
+detach(package:bayesTFR, unload=TRUE)#
+library(bayesDem)
+bayesDem.go()
+detach(package:bayesDem, unload=TRUE)#
+detach(package:bayesLife, unload=TRUE)#
+detach(package:bayesTFR, unload=TRUE)#
+library(bayesDem)
+bayesDem.go()
+detach(package:bayesDem, unload=TRUE)#
+detach(package:bayesLife, unload=TRUE)#
+detach(package:bayesTFR, unload=TRUE)#
+library(bayesDem)
+bayesDem.go()
+detach(package:bayesDem, unload=TRUE)#
+detach(package:bayesLife, unload=TRUE)#
+detach(package:bayesTFR, unload=TRUE)#
+library(bayesDem)
+bayesDem.go()
+detach(package:bayesDem, unload=TRUE)#
+detach(package:bayesLife, unload=TRUE)#
+detach(package:bayesTFR, unload=TRUE)#
+library(bayesDem)
+bayesDem.go()
+load('last.dump.rda'); debugger()
+params[[par]][[item]]
+par
+params[[par]]
+item
+detach(package:bayesDem, unload=TRUE)#
+detach(package:bayesLife, unload=TRUE)#
+detach(package:bayesTFR, unload=TRUE)#
+library(bayesDem)
+bayesDem.go()
+load('last.dump.rda'); debugger()
+item
+par
+params[[par]]
+a<-list()
+a[[1]] <- 3
+a[[2]] <- c()
+a<-list()
+a[[1]]<- c()
+params[[par]][[item]] <- c()
+value
+i
+params[[par]][[item]] <- c(params[[par]][[item]], if(nchar(value)==0) NULL else as.numeric(value))
+params[[par]][[item]] <- NULL
+params[[par]][[item]] <- c(params[[par]][[item]], if(nchar(value)==0) NULL else as.numeric(value))
+detach(package:bayesDem, unload=TRUE)#
+detach(package:bayesLife, unload=TRUE)#
+detach(package:bayesTFR, unload=TRUE)#
+library(bayesDem)
+bayesDem.go()
+.libPaths('/Users/hana/src/R/lib')
+library(bayesLife)
+help(bayesLife)
+.libPaths('/Users/hana/src/R/lib')
+library(bayesDem)
+bayesDem.go()
+detach(package:bayesDem, unload=TRUE)#
+detach(package:bayesLife, unload=TRUE)#
+detach(package:bayesTFR, unload=TRUE)#
+library(bayesDem)
+bayesDem.go()
+help(e0.predict.extra)
+.libPaths('/Users/hana/src/R/lib')
+library(bayesDem)
+bayesDem.go()
+bayesDem.go()
+sim.dir <- '3x50TMss_omega'
+diag <- e0.diagnose(sim.dir, burnin=10000, thin=10)
+summary(diag, expand=TRUE)
+names(diag)
+diag$country.specific
+names(diag$country.specific)
+diag$country.specific$not.converged.parameters
+diag_bi20T <- e0.diagnose(sim.dir, burnin=20000, thin=10)
+diag_bi20T$country.specific$not.converged.parameters
+help(exists)
+exists(.Rndom.seed)
+exists(.Random.seed)
+exists(".Random.seed")
+help(continue.e0.mcmc)
+detach(package:bayesDem, unload=TRUE)#
+detach(package:bayesLife, unload=TRUE)#
+detach(package:bayesTFR, unload=TRUE)#
+library(bayesDem)
+source('test_functions.R')
+options(error=quote(dump.frames("last.dump", TRUE)))
+test.plot.map()
+load('last.dump.rda'); debugger()
+filename
+filename
+size
+file.info(filename)
+png(filename=filename)
+e0.map(pred, projection.year=2098)
+dev.off()
+e0.map(pred, device='png', device.args=list(filename=filename))
+dev.off()
+file.info(filename)
+unlink(filename)
+source('run_tests.R')
+load('last.dump.rda'); debugger()
+dim(traces)
+traces
+traces <- get.e0.parameter.traces(m$mcmc.list, burnin=10)
+dim(traces)
+traces <- get.e0.parameter.traces(m$mcmc.list, burnin=10, #
+					thinning.index=c(4, 25, 59))
+dim(traces)
+m.check <- get.e0.mcmc(sim.dir, low.memory=FALSE, burnin=10, chain.ids=c(1,3))
+traces[1,'omega']
+m.check$mcmc.list[[1]]$traces[4,'omega']
+traces[c(2,3),'omega']==m.check$mcmc.list[[2]]$traces[c(5,9),'omega']
+traces[c(2,3),'omega']
+m.check$mcmc.list[[2]]$traces[c(5,9),'omega']
+traces[,'omega']
+m.check$mcmc.list[[1]]$traces[,'omega']
+m.check$mcmc.list[[2]]$traces[c(1,19),'omega']
+m.check$mcmc.list[[2]]$traces[,'omega']
+traces <- get.e0.parameter.traces(m$mcmc.list, burnin=10, #
+					thinning.index=c(4, 41, 59))
+traces[,'omega']
+traces <- get.e0.parameter.traces(m$mcmc.list, burnin=10, thin=8)
+dim(traces)
+60/4
+traces[2,'z']==m.check$mcmc.list[[1]]$traces[9,'z']
+traces[,'z']
+m.check$mcmc.list[[1]]$traces[,'z']
+m.check$mcmc.list[[2]]$traces[,'z']
+source('run_tests.R')
+source('run_tests.R')
+load('last.dump.rda'); debugger()
+summary(m)
+summary(e0.mcmc(m, 1))
+warnings()
+summary(e0.mcmc(m, 1), par.names.cs=NULL)
