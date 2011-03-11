@@ -2,6 +2,7 @@
 \alias{e0.map}
 \alias{e0.map.all}
 \alias{get.e0.map.parameters}
+\alias{e0.map.gvis}
 \title{
 World Map of the Life Expectancy 
 }
@@ -17,6 +18,8 @@ e0.map.all(pred, output.dir, output.type = "png",
 			
 get.e0.map.parameters(pred, e0.range = NULL, 
     nr.cats = 50, same.scale = TRUE, quantile = 0.5, \dots)
+    
+e0.map.gvis(pred, \dots)
 }
 
 \arguments{
@@ -29,7 +32,7 @@ get.e0.map.parameters(pred, e0.range = NULL,
   \item{same.scale}{Logical controlling if maps for all projection years of this prediction object should be on the same color scale.}
    \item{quantile}{Quantile for which the map should be generated. It must be equal to one of the values in \code{dimnames(pred$quantiles[[2]])}, i.e. 0, 0.025, 0.05, 0.1, 0.2, 0.25, 0.3, 0.4, 0.5, 0.6, 0.7, 0.75, 0.8, 0.9, 0.95, 0.975, 1. Value 0.5 corresponds to the median.}
   \item{file.prefix}{Prefix for file names.}
-  \item{\dots}{In \code{e0.map}, \dots are all arguments that can be passed to \code{\link[bayesTFR]{tfr.map}}, such as \code{quantile}, \code{projection.year}, \code{projection.index}, \code{device}, \code{main}, and \code{device.args}. In addition, all three functions accepts
+  \item{\dots}{In \code{e0.map}, \dots are all arguments that can be passed to \code{\link[bayesTFR]{tfr.map}}, such as \code{quantile}, \code{projection.year}, \code{projection.index}, \code{par.name}, \code{adjusted}, \code{device}, \code{main}, and \code{device.args}. In \code{e0.map.gvis}, \dots are all arguments that can be passed to \code{\link[bayesTFR]{tfr.map.gvis}}. In addition, the first three functions accept
 arguments passed to the \code{\link[rworldmap]{mapCountryData}} function of the \pkg{rworldmap} package.
 }
 }
@@ -37,6 +40,10 @@ arguments passed to the \code{\link[rworldmap]{mapCountryData}} function of the 
 \code{e0.map} creates a single map for a given projection period and quantile. \code{e0.map.all} generates a sequence of maps, namely one for each projection period. If the package \pkg{fields} is installed, a color bar legend at the botom of the map is created.
 
 Function \code{get.e0.map.parameters} can be used in combination with \code{e0.map}. (Note that \code{get.e0.map.parameters} is called from inside of \code{e0.map.all}.) It sets breakpoints for the color scheme using quantiles of a fitted gamma distribution.
+
+Function \code{e0.map.gvis} creates an interactive map using the \pkg{googleVis} package and opens it in an internet browser. It also generates a table of the mapped values that can be sorted by columns interactively in the browser. 
+
+By default, both \code{e0.map} and \code{e0.map.gvis} produce maps of life expectancy. Alternatively, the functions can be used to plot country-specific MCMC parameters into a world map. They are given by the argument \code{par.name}. One can pass any value from \code{\link{e0.parameter.names.cs.extended}()}.
 }
 \value{
 \code{get.e0.map.parameters} returns a list with elements:

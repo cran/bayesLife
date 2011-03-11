@@ -46,6 +46,7 @@ export(
 	get.e0.map.parameters,
 	e0.map.all,
 	e0.map,
+	e0.map.gvis,
 	e0.raftery.diag,
 	e0.diagnose,
 	store.bayesLife.convergence,
@@ -58,6 +59,11 @@ S3method(bdem.parameter.traces, bayesLife.mcmc)
 S3method(get.mcmc.list, bayesLife.mcmc.set)
 S3method(get.mcmc.list, bayesLife.mcmc)
 S3method(get.mcmc.list, bayesLife.prediction)
+
+S3method(get.mcmc.meta, bayesLife.mcmc.meta)
+S3method(get.mcmc.meta, bayesLife.mcmc.set)
+S3method(get.mcmc.meta, bayesLife.mcmc)
+S3method(get.mcmc.meta, bayesLife.prediction)
 
 S3method(coda.mcmc, bayesLife.mcmc)
 
@@ -74,9 +80,12 @@ S3method(get.nr.countries, bayesLife.mcmc.meta)
 S3method(get.nr.countries.est, bayesLife.mcmc.meta)
 S3method(get.data.matrix, bayesLife.mcmc.meta)
 S3method(get.countries.index, bayesLife.mcmc.meta)
+
 S3method(get.data.imputed, bayesLife.prediction)
 S3method(get.projection.summary.header, bayesLife.prediction)
 S3method(get.UN.variant.names, bayesLife.prediction)
 S3method(get.friendly.variant.names, bayesLife.prediction)
 S3method(.get.gamma.pars, bayesLife.prediction)
 S3method(.map.main.default, bayesLife.prediction)
+S3method(bdem.map.gvis, bayesLife.prediction)
+S3method(par.names.for.worldmap, bayesLife.prediction)

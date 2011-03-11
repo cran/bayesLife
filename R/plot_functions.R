@@ -140,7 +140,7 @@ e0.DLcurve.plot <- function (mcmc.list, country, burnin = NULL, pi = 80, e0.lim 
     country <- get.country.object(country, meta)
     x <- seq(e0.lim[1], e0.lim[2], length=1000)
     dlc <- c()
-    nr.curves.from.mc <- if (!is.null(nr.curves)) floor(max(nr.curves, 2000)/length(mcmc.list))
+    nr.curves.from.mc <- if (!is.null(nr.curves)) ceiling(min(nr.curves, 2000)/length(mcmc.list))
     						else NULL
     postfix <- paste('_c', country$code, sep='')
     dl.par.names <- c(paste('Triangle.c_1', postfix,sep=''),
@@ -156,7 +156,7 @@ e0.DLcurve.plot <- function (mcmc.list, country, burnin = NULL, pi = 80, e0.lim 
         traces <- load.e0.parameter.traces.cs(mcmc, country$code, 
         						burnin=th.burnin, 
 								thinning.index=thincurves.mc$index)
-		dl.pars <- traces[,dl.par.names]
+		dl.pars <- traces[,dl.par.names, drop=FALSE]
         dlc <- rbind(dlc, t(apply(dl.pars, 1, g.dl6, l=x, 
             p1 = mcmc$meta$dl.p1, p2 = mcmc$meta$dl.p2)))
     }
@@ -171,7 +171,7 @@ e0.DLcurve.plot <- function (mcmc.list, country, burnin = NULL, pi = 80, e0.lim 
     if (is.null(main)) main <- country$name
     if (is.null(ylim)) ylim <- c(miny, maxy)
     plot(dlc[thincurves$index[1], ] ~ x, col = "grey", 
-        type = "n", xlim = c(min(x), max(x)), 
+        type = ltype, xlim = c(min(x), max(x)), 
         ylim = ylim, ylab = ylab, xlab = xlab, main = main, ...
         )
     if (thincurves$nr.points > 1) {
@@ -274,4 +274,16 @@ e0.map.all <- function(pred, output.dir, output.type='png', e0.range=NULL, nr.ca
 						quantile=0.5, file.prefix='e0wrldmap_', ...) {
 	bayesTFR:::bdem.map.all(pred=pred, output.dir=output.dir, type='e0', output.type=output.type, range=e0.range,
 						nr.cats=nr.cats, same.scale=same.scale, quantile=quantile, file.prefix=file.prefix, ...)
+}
+
+e0.map.gvis <- function(pred, ...)
+	bdem.map.gvis(pred, ...)
+						
+bdem.map.gvis.bayesLife.prediction <- function(pred, ...) {
+	sex.label <- list(M='Male', F='Female')
+	bayesTFR:::.do.gvis.bdem.map('e0', paste(sex.label[[pred$mcmc.set$meta$gender]], 'Life Expectancy'), pred, ...)
+}
+
+par.names.for.worldmap.bayesLife.prediction <- function(pred, ...) {
+	return(e0.parameter.names.cs.extended())
 }

@@ -1,0 +1,9 @@
+0.1-1 (2011/03/11)
+-----
+Function e0.map.gvis added.
+
+Method get.mcmc.meta put into NAMESPACE.
+
+0.1-0 (2011-01-19)
+-----
+Initial CRAN version.
