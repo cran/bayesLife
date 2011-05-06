@@ -66,6 +66,7 @@ test.estimate.mcmc <- function() {
 	test.name <- 'shifting the median'
 	start.test(test.name)
     country <- 'Netherlands'
+    country.idx <- get.country.object(country, m$meta)$index
     projs <- summary(pred, country=country)$projections
     e0.median.shift(sim.dir, country=country, shift=5.3, from=2051, to=2080)
 	shifted.pred <- get.e0.prediction(sim.dir)
@@ -85,7 +86,7 @@ test.estimate.mcmc <- function() {
 	test.name <- 'setting the median'
 	start.test(test.name)
 	expert.values <- c(90.5, 91, 93.8)
-    shift <- expert.values - pred$quantiles[106, '0.5',4:6] # Netherlands has index 106
+    shift <- expert.values - pred$quantiles[country.idx, '0.5',4:6] # Netherlands has index 106
 	mod.pred <- e0.median.set(sim.dir, country=country, values=expert.values, years=2024)
 	mod.projs <- summary(mod.pred, country=country)$projections
 	stopifnot(all(mod.projs[4:6, c(1,3:dim(projs)[2])]==projs[4:6, c(1,3:dim(projs)[2])]+shift))
@@ -228,4 +229,23 @@ test.get.parameter.traces <- function() {
 	stopifnot(traces[2,'z']==m.check$mcmc.list[[1]]$traces[5,'z']) #(4+1)
 	stopifnot(traces[14,'z']==m.check$mcmc.list[[2]]$traces[13,'z']) #(3*4 + 1)
 	test.ok(test.name)
+}
+
+test.run.mcmc.simulation.auto <- function() {
+	sim.dir <- tempfile()
+	# run MCMC
+	test.name <- 'running auto MCMC'
+	start.test(test.name)
+	m <- run.e0.mcmc(iter='auto', output.dir=sim.dir, thin=1,
+					auto.conf=list(iter=10, iter.incr=5, max.loops=3, nr.chains=2, thin=1, burnin=5))
+	stopifnot(get.total.iterations(m$mcmc.list, 0) == 40)
+	test.ok(test.name)
+
+	test.name <- 'continuing auto MCMC'
+	start.test(test.name)
+	m <- continue.e0.mcmc(iter='auto', output.dir=sim.dir, auto.conf=list(max.loops=2))
+	stopifnot(get.total.iterations(m$mcmc.list, 0) == 60)
+	test.ok(test.name)
+
+	unlink(sim.dir, recursive=TRUE)
 }

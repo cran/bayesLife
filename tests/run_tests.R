@@ -7,5 +7,6 @@ test.DLcurve()
 test.e0trajectories()
 test.plot.density()
 test.get.parameter.traces()
-
 test.plot.map()
+
+#test.run.mcmc.simulation.auto()

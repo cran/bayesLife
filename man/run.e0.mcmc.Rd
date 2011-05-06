@@ -10,10 +10,10 @@ Running Markov Chain Monte Carlo for Parameters of Life Expectancy
 Runs (or continues running) MCMCs for simulating the life expectancy for all countries of the world, using a Bayesian hierarchical model.
 }
 \usage{
-run.e0.mcmc(gender = "M", nr.chains = 3, iter = 1e+05, 
+run.e0.mcmc(sex = c("Male", "Female"), nr.chains = 3, iter = 100000, 
     output.dir = file.path(getwd(), "bayesLife.output"), 
     thin = 10, replace.output = FALSE, 
-    start.year = 1950, present.year = 2010, wpp.year = 2008, 
+    start.year = 1950, present.year = 2010, wpp.year = 2010, 
     my.e0.file = NULL, buffer.size = 100, 
     a = c(15.7669391, 40.9658241, 0.2107961, 
           19.8188061, 2.9306625, 0.400688628), 
@@ -38,17 +38,21 @@ run.e0.mcmc(gender = "M", nr.chains = 3, iter = 1e+05,
     z.c.ini.norm = c(round(z.ini.low + (z.ini.up - z.ini.low)/2, 2), 0.2), 
     Triangle.c.width = c(4, 6, 3, 4), k.c.width = 1, z.c.width = 0.2, 
     nu = 4, dl.p1 = 9, dl.p2 = 9, seed = NULL, 
-    parallel = FALSE, nr.nodes = nr.chains, verbose = FALSE, \dots)
+    parallel = FALSE, nr.nodes = nr.chains, 
+    auto.conf = list(max.loops=5, iter=100000, iter.incr=20000, 
+        nr.chains=3, thin=120, burnin=20000),
+    verbose = FALSE, \dots)
     
 continue.e0.mcmc(iter, chain.ids = NULL, 
     output.dir = file.path(getwd(), "bayesLife.output"), 
-    parallel = FALSE, nr.nodes = NULL, verbose = FALSE, \dots)
+    parallel = FALSE, nr.nodes = NULL, auto.conf = NULL, 
+    verbose = FALSE, \dots)
 }
 
 \arguments{
-  \item{gender}{Gender for which to run the simulation. Possible values are \dQuote{M} for male and \dQuote{F} for female.}
+  \item{sex}{Sex for which to run the simulation.}
   \item{nr.chains}{Number of MCMC chains to run.}
-  \item{iter}{Number of iterations to run in each chain.}
+  \item{iter}{Number of iterations to run in each chain. In addition to a single value, it can have the value \sQuote{auto} in which case the function runs for the number of iterations given in the \code{auto.conf} list (see below), then checks if the MCMCs converged (using the \code{auto.conf} settings). If it did not converge, the procedure is repeated until convergence is reached or the number of repetition exceeded \code{auto.conf$max.loops}.}
   \item{output.dir}{Directory which the simulation output should be written into.}
   \item{thin}{Thinning interval between consecutive observations to be stored on disk.}
   \item{replace.output}{If \code{TRUE}, existing outputs in \code{output.dir} will be replaced by results of this simulation.}
@@ -91,6 +95,7 @@ continue.e0.mcmc(iter, chain.ids = NULL,
   \item{seed}{Seed of the random number generator. If \code{NULL} no seed is set. It can be used to generate reproducible results.}
   \item{parallel}{Logical determining if the simulation should run multiple chains in parallel. If it is \code{TRUE}, the package \pkg{\link[snowFT]{snowFT}} is required.}
   \item{nr.nodes}{Relevant only if \code{parallel} is \code{TRUE}. It gives the number of nodes for running the simulation in parallel. By default it equals to the number of chains.}
+    \item{auto.conf}{List containing a configuration for an \sQuote{automatic} run (see description of argument \code{iter}). Item \code{iter} gives the number of iterations in the first chunk of the MCMC simulation; item \code{iter.incr} gives the number of iterations in the following chunks; \code{nr.chains} gives the number of chains in all chunks of the MCMC simulation; items \code{thin} and \code{burnin} are used in the convergence diagnostics following each chunk; \code{max.loops} controls the maximum number of chunks. All items must be integer values. This argument is only used if the function argument \code{iter} is set to \sQuote{auto}.}
   \item{verbose}{Logical switching log messages on and off.}
   \item{\dots}{Additional parameters to be passed to the function \code{\link[snowFT]{performParallel}}, if \code{parallel} is \code{TRUE}.}
   \item{chain.ids}{Array of chain identifiers that should be resumed. If it is \code{NULL}, all existing chains in \code{output.dir} are resumed.}

@@ -50,7 +50,8 @@ e0.trajectories.plot <- function(e0.pred, country, pi=c(80, 95),
 								max(trajectories$trajectories, y1.part1, y1.part2, na.rm=TRUE))
 	if(is.null(main)) main <- country$name
 	# plot historical data: observed
-	plot(x1[1:lpart1], y1.part1, type=type, xlim=xlim, ylim=ylim, ylab=ylab, xlab=xlab, main=main, ...
+	plot(x1[1:lpart1], y1.part1, type=type, xlim=xlim, ylim=ylim, ylab=ylab, xlab=xlab, main=main, 
+			panel.first = grid(), ...
 					)
 	if(lpart2 > 0) {
 		lines(x1[(lpart1+1): length(x1)], y1.part2, pch=2, type='b', col='green')
@@ -281,7 +282,7 @@ e0.map.gvis <- function(pred, ...)
 						
 bdem.map.gvis.bayesLife.prediction <- function(pred, ...) {
 	sex.label <- list(M='Male', F='Female')
-	bayesTFR:::.do.gvis.bdem.map('e0', paste(sex.label[[pred$mcmc.set$meta$gender]], 'Life Expectancy'), pred, ...)
+	bayesTFR:::.do.gvis.bdem.map('e0', paste(sex.label[[pred$mcmc.set$meta$sex]], 'Life Expectancy'), pred, ...)
 }
 
 par.names.for.worldmap.bayesLife.prediction <- function(pred, ...) {

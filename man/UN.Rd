@@ -2,15 +2,22 @@
 \alias{UN2008e0F}
 \alias{UN2008e0M}
 \alias{UN2008e0}
+\alias{UN2010e0F}
+\alias{UN2010e0M}
+\alias{UN2010e0}
 \alias{my_e0_template}
 \docType{data}
 \title{
 United Nations Time Series of the Life Expectancy
 }
 \description{
-Data sets containing the United Nations time series of the life expectancy for all countries of the world as available in 2008. These are TAB-separated ASCII files, \dQuote{UN2008e0F.txt} and \dQuote{UN2008e0M.txt}, corresponding to female and male life expectancy, respectively. \code{my_e0_template} is a template for user-specific data.
+Data sets containing the United Nations time series of the life expectancy for all countries of the world as available in 2010 and 2008. These are TAB-separated ASCII files, \dQuote{UN2010e0F.txt}, {UN2010e0M.txt}, {UN2008e0F.txt}, and \dQuote{UN2008e0M.txt}, corresponding to female and male life expectancy, respectively, in the particular years. \code{my_e0_template} is a template for user-specific data.
 }
 \usage{
+data(UN2010e0F)
+
+data(UN2010e0M)
+
 data(UN2008e0F)
 
 data(UN2008e0M)
@@ -39,7 +46,7 @@ data(my_e0_template)
   }
 }
 \details{
-All entries in these data sets must be included in the data set of locations, \code{\link{WPP2008_LOCATIONS}}. They are matched using the column \code{country_code}.
+All entries in these data sets must be included in the data set of locations, \code{\link{WPP2010_LOCATIONS}} and \code{\link{WPP2008_LOCATIONS}}, respectively. They are matched using the column \code{country_code}.
 
 Regarding the time columns, only those are necessary that correspond to an earlier or equal time point than the value of the argument \code{present.year} passed to the function \code{\link{run.e0.mcmc}}. Thus, if \code{present.year=2003}, the column \code{2005-2010} is not used.
 
@@ -48,7 +55,7 @@ Optionally, the data sets can contain a column called \code{last.observed} conta
 The package contains also a data set called \sQuote{my_e0_template} which is a template for user-specified e0 time series. It has the same structure, except that it can contain any subset of the set of the columns above. The only required column is \code{country_code} (see description of the argument \code{my.e0.file} in \code{\link{run.e0.mcmc}}).
 }
 \source{
-Data provided by the United Nations Population Division
+Data provided by the United Nations Population Division; see also \url{http://esa.un.org/unpd/wpp}.
 }
 %\references{
 %%  ~~ possibly secondary sources and usages ~~

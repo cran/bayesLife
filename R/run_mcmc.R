@@ -1,6 +1,6 @@
-run.e0.mcmc <- function(gender="M", nr.chains=3, iter=100000, output.dir=file.path(getwd(), 'bayesLife.output'), 
+run.e0.mcmc <- function(sex=c("Male", "Female"), nr.chains=3, iter=100000, output.dir=file.path(getwd(), 'bayesLife.output'), 
                          thin=10, replace.output=FALSE,
-                         start.year=1950, present.year=2010, wpp.year=2008,
+                         start.year=1950, present.year=2010, wpp.year=2010,
                          my.e0.file = NULL, buffer.size=100,
                          a=c(15.7669391,40.9658241,0.2107961,19.8188061,2.9306625,0.400688628),
 						 delta=c(1.887, 1.982, 1.99, 1.949, 0.995, 0.4), 
@@ -21,7 +21,8 @@ run.e0.mcmc <- function(gender="M", nr.chains=3, iter=100000, output.dir=file.pa
 						 Triangle.c.width = c(4, 6, 3, 4), k.c.width=1, z.c.width=0.2,
 						 #Triangle.c.width = c(5, 5, 5, 5), k.c.width=0.5, z.c.width=0.06,
 						 nu=4, dl.p1=9, dl.p2=9,
-                         seed = NULL, parallel=FALSE, nr.nodes=nr.chains, 
+                         seed = NULL, parallel=FALSE, nr.nodes=nr.chains,
+                         auto.conf = list(max.loops=5, iter=100000, iter.incr=20000, nr.chains=3, thin=120, burnin=20000),
 						 verbose=FALSE, ...) {
 						 	
 	get.init.values.between.low.and.up <- function(low, up)
@@ -34,6 +35,17 @@ run.e0.mcmc <- function(gender="M", nr.chains=3, iter=100000, output.dir=file.pa
         unlink(output.dir, recursive=TRUE)
 	}
     dir.create(output.dir)
+    
+    default.auto.conf <- formals(run.e0.mcmc)$auto.conf
+	for (par in names(default.auto.conf))
+		if(is.null(auto.conf[[par]])) auto.conf[[par]] <- default.auto.conf[[par]]
+	auto.run <- FALSE
+	if(iter == 'auto') { # defaults for auto-run (includes convergence diagnostics)
+		iter <- auto.conf$iter
+		nr.chains <- auto.conf$nr.chains
+		auto.run <- TRUE		
+	}
+
                 
 	if (verbose) {
 		cat('\nStarting bayesian prediction of life expectancy.\n')
@@ -60,8 +72,8 @@ run.e0.mcmc <- function(gender="M", nr.chains=3, iter=100000, output.dir=file.pa
 		lambda.z.ini <- get.init.values.between.low.and.up(lambda.z.ini.low, lambda.z.ini.up)
 	if(is.null(omega.ini)) 
 		omega.ini <- get.init.values.between.low.and.up(omega.ini.low, omega.ini.up)
-	
-	bayesLife.mcmc.meta <- e0.mcmc.meta.ini(gender=gender, nr.chains=nr.chains,
+	sex <- substr(match.arg(sex), 1, 1)
+	bayesLife.mcmc.meta <- e0.mcmc.meta.ini(sex=sex, nr.chains=nr.chains,
                                    		start.year=start.year, present.year=present.year, 
                                         wpp.year=wpp.year, my.e0.file = my.e0.file,
                                         output.dir=output.dir,
@@ -78,7 +90,8 @@ run.e0.mcmc <- function(gender="M", nr.chains=3, iter=100000, output.dir=file.pa
                                         Triangle.c.ini.norm=Triangle.c.ini.norm,
                                         k.c.ini.norm=k.c.ini.norm, z.c.ini.norm=z.c.ini.norm,
                                         Triangle.c.width=Triangle.c.width, k.c.width=k.c.width, z.c.width=z.c.width,
-                                        nu=nu, dl.p1=dl.p1, dl.p2=dl.p2, buffer.size=buffer.size, verbose=verbose)
+                                        nu=nu, dl.p1=dl.p1, dl.p2=dl.p2, buffer.size=buffer.size, 
+                                        auto.conf=auto.conf, verbose=verbose)
     store.bayesLife.meta.object(bayesLife.mcmc.meta, output.dir)
     
     # propagate initial values for all chains if needed
@@ -112,10 +125,28 @@ run.e0.mcmc <- function(gender="M", nr.chains=3, iter=100000, output.dir=file.pa
                                                 iter=iter, starting.values=starting.values, verbose=verbose)
 		}
 	}
+	names(chain.set) <- 1:nr.chains
+	mcmc.set <- structure(list(meta=bayesLife.mcmc.meta, mcmc.list=chain.set), class='bayesLife.mcmc.set')
     cat('\nResults stored in', output.dir,'\n')
+    
+    if(auto.run) {
+		diag <- try(e0.diagnose(sim.dir=output.dir, keep.thin.mcmc=TRUE, 
+						thin=auto.conf$thin, burnin=auto.conf$burnin,
+						verbose=verbose))
+		if(auto.conf$max.loops>1) {
+			for(loop in 2:auto.conf$max.loops) {
+				if(!inherits(diag, "try-error") && has.mcmc.converged(diag)) break
+				mcmc.set <- continue.e0.mcmc(iter=auto.conf$iter.incr, output.dir=output.dir, nr.nodes=nr.nodes,
+										  parallel=parallel, verbose=verbose)
+				diag <- try(e0.diagnose(sim.dir=output.dir, keep.thin.mcmc=TRUE, 
+							thin=auto.conf$thin, burnin=auto.conf$burnin,
+							verbose=verbose))
+			}
+		}
+	}
     if (verbose) 
 		cat('\nSimulation successfully finished!!!\n')
-    invisible(structure(list(meta=bayesLife.mcmc.meta, mcmc.list=chain.set), class='bayesLife.mcmc.set'))
+    invisible(mcmc.set)
 }
 
 
@@ -145,20 +176,20 @@ mcmc.run.chain.e0 <- function(chain.id, meta, thin=1, iter=100, starting.values=
 }
         
 continue.e0.mcmc <- function(iter, chain.ids=NULL, output.dir=file.path(getwd(), 'bayesLife.output'), 
-                             parallel=FALSE, nr.nodes=NULL, verbose=FALSE, ...) {
+                             parallel=FALSE, nr.nodes=NULL, auto.conf = NULL, verbose=FALSE, ...) {
         mcmc.set <- get.e0.mcmc(output.dir)
 
         auto.run <- FALSE
-#        if(iter == 'auto') { # defaults for auto-run (includes convergence diagnostics)
-#                default.auto.conf <- mcmc.set$meta$auto.conf
-#                if(is.null(auto.conf)) auto.conf <- list()
-#                for (par in names(default.auto.conf))
-#                        if(is.null(auto.conf[[par]])) auto.conf[[par]] <- default.auto.conf[[par]]
-#                iter <- auto.conf$iter
-#                auto.run <- TRUE
-#                fiter <- sapply(mcmc.set$mcmc.list, function(x) x$finished.iter)
-#                if (!all(fiter== fiter[1])) stop('All chains must be of the same length if the "auto" option is used.')
-#        }
+        if(iter == 'auto') { # defaults for auto-run (includes convergence diagnostics)
+			default.auto.conf <- mcmc.set$meta$auto.conf
+			if(is.null(auto.conf)) auto.conf <- list()
+			for (par in names(default.auto.conf))
+				if(is.null(auto.conf[[par]])) auto.conf[[par]] <- default.auto.conf[[par]]
+			iter <- auto.conf$iter.incr
+			auto.run <- TRUE
+			fiter <- sapply(mcmc.set$mcmc.list, function(x) x$finished.iter)
+			if (!all(fiter== fiter[1])) stop('All chains must be of the same length if the "auto" option is used.')
+        }
         if (is.null(chain.ids) || auto.run) {
                 chain.ids <- names(mcmc.set$mcmc.list)
         }
@@ -176,21 +207,20 @@ continue.e0.mcmc <- function(iter, chain.ids=NULL, output.dir=file.path(getwd(),
                 }
         }
         cat('\n')
-        #if(auto.run) {
-        #        diag <- try(tfr.diagnose(sim.dir=output.dir, keep.thin.mcmc=TRUE, 
-        #                                        thin=auto.conf$thin, burnin=auto.conf$burnin,
-        #                                        verbose=verbose))
-        #        if(auto.conf$max.loops>1) {
-        #                for(loop in 2:auto.conf$max.loops) {
-        #                        if(!inherits(diag, "try-error") && has.mcmc.converged(diag)) break
-        #                        mcmc.set <- continue.tfr.mcmc(iter=auto.conf$iter, output.dir=output.dir, nr.nodes=nr.nodes,
-        #                                                                          parallel=parallel, verbose=verbose)
-        #                        diag <- try(tfr.diagnose(sim.dir=output.dir, keep.thin.mcmc=TRUE, 
-        #                                                thin=auto.conf$thin, burnin=auto.conf$burnin,
-        #                                                verbose=verbose))
-        #                }
-        #        }
-        #}
+        if(auto.run) {
+        	diag <- try(e0.diagnose(sim.dir=output.dir, keep.thin.mcmc=TRUE, 
+                                    thin=auto.conf$thin, burnin=auto.conf$burnin,
+                                    verbose=verbose))
+			if(auto.conf$max.loops>1) {
+				for(loop in 2:auto.conf$max.loops) {
+					if(!inherits(diag, "try-error") && has.mcmc.converged(diag)) break
+					mcmc.set <- continue.e0.mcmc(iter=auto.conf$iter.incr, output.dir=output.dir, nr.nodes=nr.nodes,
+												 parallel=parallel, verbose=verbose)
+					diag <- try(e0.diagnose(sim.dir=output.dir, keep.thin.mcmc=TRUE, 
+											thin=auto.conf$thin, burnin=auto.conf$burnin, verbose=verbose))
+				}
+			}
+		}
         invisible(mcmc.set)
 }
 
@@ -301,16 +331,16 @@ init.nodes.e0 <- function() {
 						T.end.c = T_end_c, d.ct=d.ct, loessSD=loessSD))
 }
 
-e0.mcmc.meta.ini <- function(gender="M", nr.chains=1, start.year=1950, present.year=2010, 
+e0.mcmc.meta.ini <- function(sex="M", nr.chains=1, start.year=1950, present.year=2010, 
 								wpp.year=2008, my.e0.file = NULL,
 								output.dir=file.path(getwd(), 'bayesLife.output'),
 								..., verbose=FALSE) {
-	mcmc.input <- c(list(gender=gender, nr.chains=nr.chains,
+	mcmc.input <- c(list(sex=sex, nr.chains=nr.chains,
 						start.year=start.year, present.year=present.year, 
 						wpp.year=wpp.year, my.e0.file = my.e0.file,
 						output.dir=output.dir), list(...))
 						
-    data <- get.wpp.e0.data (gender, start.year=start.year, present.year=present.year, 
+    data <- get.wpp.e0.data (sex, start.year=start.year, present.year=present.year, 
 						wpp.year=wpp.year, my.e0.file = my.e0.file, verbose=verbose)
 	part.ini <- .do.part.e0.mcmc.meta.ini(data)
 	return(structure(c(mcmc.input, data, part.ini), class='bayesLife.mcmc.meta'))

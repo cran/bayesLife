@@ -11,7 +11,7 @@ It contains information that is common to all chains. It is a part of a \code{\l
 
 
 \value{
-	A \code{bayesLife.mcmc.meta} object contains components \code{gender, nr.chains, 
+	A \code{bayesLife.mcmc.meta} object contains components \code{sex, nr.chains, 
 		start.year, present.year, wpp.year, buffer.size, my.e0.file, a, delta, tau,}\cr
 		\code{Triangle.ini, k.ini, z.ini, omega.ini, lambda.ini, lambda.k.ini,}\cr 
 		\code{lambda.z.ini, Triangle.ini.low, 

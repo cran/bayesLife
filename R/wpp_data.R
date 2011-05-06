@@ -1,12 +1,12 @@
-get.wpp.e0.data <- function(gender='M', start.year=1950, present.year=2010, wpp.year=2008, my.e0.file=NULL, 
+get.wpp.e0.data <- function(sex='M', start.year=1950, present.year=2010, wpp.year=2008, my.e0.file=NULL, 
 							verbose=FALSE) {
-	gender <- toupper(gender)
-	if(gender != 'M' && gender != 'F')
-		stop('Allowed values for argument "gender" are "M" and "F".')
+	sex <- toupper(sex)
+	if(sex != 'M' && sex != 'F')
+		stop('Allowed values for argument "sex" are "M" and "F".')
 	########################################
 	# set data and match with areas
 	########################################
-	data <- read.UNe0(gender=gender, wpp.year=wpp.year, my.e0.file=my.e0.file, 
+	data <- read.UNe0(sex=sex, wpp.year=wpp.year, my.e0.file=my.e0.file, 
 								present.year=present.year, verbose=verbose)$data
 	# get region and area data
 	locations <- bayesTFR:::read.UNlocations(data, wpp.year=wpp.year, package='bayesLife', verbose=verbose)
@@ -34,14 +34,14 @@ get.wpp.e0.data <- function(gender='M', start.year=1950, present.year=2010, wpp.
 }
 
 
-read.UNe0 <- function(gender, wpp.year, my.e0.file=NULL, ...) {
-	un.file.name <- file.path(.find.package("bayesLife"), "data", paste('UN', wpp.year, 'e0', gender, '.txt', sep=''))
+read.UNe0 <- function(sex, wpp.year, my.e0.file=NULL, ...) {
+	un.file.name <- file.path(.find.package("bayesLife"), "data", paste('UN', wpp.year, 'e0', sex, '.txt', sep=''))
 	return(bayesTFR:::do.read.un.file(un.file.name, wpp.year, my.file=my.e0.file, ...))
 }
 
 set.e0.wpp.extra <- function(meta, countries=NULL, my.e0.file=NULL, verbose=FALSE) {
 	#'countries' is a vector of country or region codes 
-	data <- read.UNe0(gender=meta$gender, wpp.year=meta$wpp.year, my.e0.file=my.e0.file, 
+	data <- read.UNe0(sex=meta$sex, wpp.year=meta$wpp.year, my.e0.file=my.e0.file, 
 							present.year=meta$present.year, verbose=verbose)
 	extra.wpp <- bayesTFR:::.extra.matrix.regions(data=data, countries=countries, meta=meta, 
 							package="bayesLife", verbose=verbose)
