@@ -1,3 +1,56 @@
+0.3-2 (04/12/2012)
+-----
+Some defaults of run.e0.mcmc changed (e.g. start.year was set 1873).
+
+Argument joint.male added to get.e0.prediction.
+
+Added functions get.e0.jmale.prediction and has.e0.jmale.prediction.
+
+Function e0.trajectories.plot can plot distribution for both sexes into one plot (argument both.sexes).
+
+Example data reduced from 3x50/2 iterations to 2x60/2 iterations.
+
+Functionality for overwriting country specific prior parameters added (argument country.overwrites in run.e0.mcmc and run.e0.mcmc.extra).
+
+Arguments verbose.iter and constant.variance added to run.e0.mcmc.
+
+e0.coda.mcmc.list renamed to e0.coda.list.mcmc to be consistent with bayesTFR's function coda.list.mcmc.
+
+Some clean up of the experimental code.
+
+
+0.3-1 (02/08/2012)
+-----
+The GoF.dl function renamed to e0.GoF.dl and its implementation was consolidated with tfr.GoF.dl in bayesTFR.
+
+Arguments added to run.e0.mcmc for setting the lower and upper bounds of truncated normal prior distributions.
+
+A few arguments added to e0.trajectories.plot.
+
+New functionality for handling supplemental historical data implemented.
+
+New functionality for joint prediction of female and male (Lalic et al) implemented.  
+
+Some experimental functions added.
+
+0.3-0 (11/17/2011)
+-----
+Performance improved in two ways:
+1. MCMCs are converted to environments (instead of being lists), so that they are not copied every time.
+2. A few functions implemented in C.
+
+Function GoF.dl for computing goodness of fit added.
+
+An argument 'predictive.distr' added to the e0.DLcurve.plot to plot predictive distribution of the DL function.
+
+A bug in the e0.DLcurve.plot function fixed that made the quantile curves noisy.
+
+0.2-1 (10/13/2011)
+-----
+A few internal modifications.
+
+Function get.countries.table added.
+	
 0.2-0 (05/06/2011)
 -----
 Official UN WPP 2010 data added to the package and the default for argument wpp.year set to 2010.

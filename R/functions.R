@@ -2,29 +2,28 @@
 
 
 g.dl6<-function(x,l, p1, p2){
-  d1<-x[1]; d2<-x[2]; d3<-x[3]; d4<-x[4]; k1<-x[5]; z<-x[6]
-
-  m1<-sum(d1,.5*d2)
-  m2<-sum(d1,d2,d3,.5*d4)
-  k2<-z-k1
-  k1/(1+exp(-log(p1^2)*(l-m1)/d2))+ k2/(1+exp(-log(p2^2)*(l-m2)/d4))
+	dlvalue <- rep(0.0, length(l))
+	res <- .C("doDL", x, l, p1, p2, length(l), dl_values=dlvalue)
+	return(res$dl_values)
 }
 
 loess.lookup<-function(look){
    #-- spline function
-     a<- 2.1828214 
-     b<- -0.0335983
-     c<- 0.0463050 
-     d<- -0.0495180 
-   
-     x1<- 51.2058
-     x2<-65.801 
-   
-     val<-a+b*look+c*(ifelse(look>x1,look-x1,0))+d*(ifelse(look>x2,look-x2,0))
-     
-     if(look>77.2) val<-a+b*77.2+c*(ifelse(77.2>x1,77.2-x1,0))+d*(ifelse(77.2>x2,77.2-x2,0))
+#     a<- 2.1828214 
+#     b<- -0.0335983
+#     c<- 0.0463050 
+#     d<- -0.0495180 
+#   
+#     x1<- 51.2058
+#     x2<-65.801 
+#   
+#     val<-a+b*look+c*(ifelse(look>x1,look-x1,0))+d*(ifelse(look>x2,look-x2,0))
+#     
+#     if(look>77.2) val<-a+b*77.2+c*(ifelse(77.2>x1,77.2-x1,0))+d*(ifelse(77.2>x2,77.2-x2,0))
       
-   return(val)
+   # call data(loess_sd) before using this function
+   idx <- cut(look, loess.sd$x, labels=FALSE, include.lowest = TRUE)
+   return(loess.sd$y[idx])
 }
 
 

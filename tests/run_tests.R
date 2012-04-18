@@ -1,5 +1,6 @@
 library(bayesLife)
 source('test_functions.R')
+test.estimate.mcmc.with.suppl.data()
 test.get.wpp.data()
 test.estimate.mcmc()
 test.existing.simulation()

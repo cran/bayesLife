@@ -61,9 +61,11 @@ has.e0.prediction <- function(mcmc=NULL, sim.dir=NULL) {
 	return(FALSE)
 }
 
-get.e0.prediction <- function(mcmc=NULL, sim.dir=NULL, mcmc.dir=NULL) {
+get.e0.prediction <- function(mcmc=NULL, sim.dir=NULL, joint.male=FALSE, mcmc.dir=NULL) {
 	############
 	# Returns an object of class bayesLife.prediction
+	# Set mcmc.dir to NA, if the prediction object should not have a pointer 
+	# to the corresponding mcmc traces
 	############
 	if (!is.null(mcmc)) 
 		sim.dir <- if(is.character(mcmc)) mcmc else mcmc$meta$output.dir
@@ -76,17 +78,24 @@ get.e0.prediction <- function(mcmc=NULL, sim.dir=NULL, mcmc.dir=NULL) {
 	}
 	load(file=pred.file)
 	bayesLife.prediction$output.directory <- output.dir
+	if(has.e0.jmale.prediction(bayesLife.prediction)) 
+		bayesLife.prediction$joint.male$output.directory <- file.path(output.dir, 'joint_male')
 	
 	pred <- bayesLife.prediction
 	# re-route mcmcs if necessary
 	if(!is.null(mcmc.dir) || !has.e0.mcmc(pred$mcmc.set$meta$output.dir)) {
-		new.path <- file.path(sim.dir, basename(pred$mcmc.set$meta$output.dir))
-		if (has.e0.mcmc(new.path)) pred$mcmc.set <- get.e0.mcmc(new.path)
-		else {
-			est.dir <- if(is.null(mcmc.dir)) sim.dir else mcmc.dir
-			pred$mcmc.set <- get.e0.mcmc(est.dir)
+		if((!is.null(mcmc.dir) && !is.na(mcmc.dir)) || is.null(mcmc.dir)) {
+			new.path <- file.path(sim.dir, basename(pred$mcmc.set$meta$output.dir))
+			if (has.e0.mcmc(new.path)) pred$mcmc.set <- get.e0.mcmc(new.path)
+			else {
+				est.dir <- if(is.null(mcmc.dir)) sim.dir else mcmc.dir
+				pred$mcmc.set <- get.e0.mcmc(est.dir)
+			}
 		}
 	}
+	if(joint.male && pred$mcmc.set$meta$sex == 'F') 
+		pred <- get.e0.jmale.prediction(pred) # overwrite the prediction object by the male prediction
+
 	return(pred)
 }
 
@@ -214,10 +223,14 @@ summary.bayesLife.mcmc.set <- function(object, country=NULL, chain.id=NULL,
 								par.names.cs=e0.parameter.names.cs(), 
 								meta.only=FALSE, thin=1, burnin=0, ...) {
 	if(is.null(country) & missing(par.names.cs)) par.names.cs <- NULL
-	cat('\nMCMC parameters estimated for', object$meta$nr.countries, 'countries.')
-	cat('\nHyperparameters estimated using', object$meta$nr.countries.estimation, 'countries.\n')
+	cat('\nSimulation:', get.sex.label(object$meta), 'life expectancy')
 	cat('\nWPP:', object$meta$wpp.year)
-	cat('\nInput data: e0 for period', object$meta$start.year, '-', object$meta$present.year,'.')
+	cat('\nInput data: e0 for period', object$meta$start.year, '-', object$meta$present.year,'\n')
+	
+	cat('\nMCMC parameters estimated for', object$meta$nr.countries, 'countries.')
+	cat('\nHyperparameters estimated using', object$meta$nr.countries.estimation, 'countries.')
+	
+	
 	cat('\n')
 	if(meta.only) {
 		get.iter <- function(x) x$finished.iter
@@ -236,7 +249,7 @@ summary.bayesLife.mcmc.set <- function(object, country=NULL, chain.id=NULL,
 		cat('\nCountry:', country.obj$name, '\n')
 		country <- country.obj$code
 	}
-	summary(coda.mcmc.list(object, country=country, par.names=par.names,
+	summary(coda.list.mcmc(object, country=country, par.names=par.names,
 							par.names.cs=par.names.cs, thin=thin, burnin=burnin), ...)
 }
 
@@ -246,6 +259,9 @@ summary.bayesLife.prediction <- function(object, country=NULL, compact=TRUE, ...
 	res <- bayesTFR:::get.prediction.summary.data(object, 
 				unchanged.pars=c('burnin', 'nr.traj'), 
 				country=country, compact=compact)
+	res$sex.label <- get.sex.label(object$mcmc.set$meta)
+	if(res$sex.label == 'Female') 
+		res$joint.male.exist <- has.e0.jmale.prediction(object)
 	class(res) <- 'summary.bayesLife.prediction'
 	return(bayesTFR:::.update.summary.data.by.shift(res, object, country))
 }
@@ -253,6 +269,8 @@ summary.bayesLife.prediction <- function(object, country=NULL, compact=TRUE, ...
 print.summary.bayesLife.prediction <- function(x, digits = 3, ...) {
 	cat('\nProjections:', length(x$projection.years), '(', x$projection.years[1], '-', 
 					x$projection.years[length(x$projection.years)], ')')
+	cat('\nSex:', x$sex.label)
+	if(x$joint.male.exist) cat(' (Joint male projection exists)')
 	cat('\nTrajectories:', x$nr.traj)
 	cat('\nBurnin:', x$burnin)
 
@@ -296,7 +314,7 @@ create.thinned.e0.mcmc <- function(mcmc.set, thin=1, burnin=0, output.dir=NULL, 
 	store.bayesLife.meta.object(meta, meta$output.dir)
 
 	
-	thin.index <- if(thin > mcthin) unique(round(seq(thin, total.iter, by=thin/mcthin))) else 1:total.iter
+	thin.index <- if(thin > mcthin) unique(round(seq(1, total.iter, by=thin/mcthin))) else 1:total.iter
 	nr.points <- length(thin.index)
 	
 	#create one collapsed mcmc
@@ -350,7 +368,7 @@ coda.mcmc.bayesLife.mcmc <- function(mcmc, country=NULL, par.names=e0.parameter.
 	return(bayesTFR:::coda.mcmc.bayesTFR.mcmc(mcmc, country=country, par.names=par.names, 
 												par.names.cs=par.names.cs, ...))
 												
-e0.coda.mcmc.list <- function(mcmc.list=NULL, country=NULL, chain.ids=NULL,
+e0.coda.list.mcmc <- function(mcmc.list=NULL, country=NULL, chain.ids=NULL,
 							sim.dir=file.path(getwd(), 'bayesLife.output'), 
 							par.names=e0.parameter.names(), 
 							par.names.cs=e0.parameter.names.cs(), 
@@ -374,3 +392,8 @@ e0.coda.mcmc.list <- function(mcmc.list=NULL, country=NULL, chain.ids=NULL,
 }
 
 get.countries.index.bayesLife.mcmc.meta  <- function(meta, ...) return (1:meta$nr.countries)
+
+get.countries.table.bayesLife.mcmc.set <- function(object, ...) 
+	return(bayesTFR:::get.countries.table.bayesTFR.mcmc.set(object,...))
+get.countries.table.bayesLife.prediction <- function(object, ...) 
+	return(bayesTFR:::get.countries.table.bayesTFR.prediction(object,...))

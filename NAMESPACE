@@ -4,6 +4,9 @@ import(
     bayesTFR
 )
 
+#exportPattern("^[[:alpha:]]+")
+useDynLib(bayesLife)
+
 # export functions
 export(
 	run.e0.mcmc,
@@ -24,8 +27,11 @@ export(
 	create.thinned.e0.mcmc,
 	get.e0.prediction,
 	has.e0.prediction,
+	get.e0.jmale.prediction,
+	has.e0.jmale.prediction,
 	get.e0.convergence.all,
 	get.e0.convergence,
+	e0.GoF.dl,
 	e0.parameter.names.extended,
 	e0.parameter.names.cs.extended,
 	e0.parameter.names,
@@ -33,9 +39,11 @@ export(
 	get.e0.parameter.traces,
 	get.e0.parameter.traces.cs,
 	get.e0.trajectories,
-	e0.coda.mcmc.list,
+	e0.coda.list.mcmc,
 	e0.DLcurve.plot.all,
 	e0.DLcurve.plot,
+	e0.get.dlcurves,
+	e0.DLisDecrement,
 	e0.trajectories.table,
 	e0.trajectories.plot.all,
 	e0.trajectories.plot,
@@ -50,7 +58,10 @@ export(
 	e0.raftery.diag,
 	e0.diagnose,
 	store.bayesLife.convergence,
-	store.bayesLife.prediction
+	store.bayesLife.prediction,
+	e0.jmale.estimate,
+	e0.jmale.predict,
+	e0.gap.plot
 )
 
 # register S3 methods
@@ -89,3 +100,6 @@ S3method(.get.gamma.pars, bayesLife.prediction)
 S3method(.map.main.default, bayesLife.prediction)
 S3method(bdem.map.gvis, bayesLife.prediction)
 S3method(par.names.for.worldmap, bayesLife.prediction)
+S3method(get.data.for.worldmap, bayesLife.prediction)
+S3method(get.countries.table, bayesLife.prediction)
+S3method(get.countries.table, bayesLife.mcmc.set)

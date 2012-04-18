@@ -1,5 +1,7 @@
 \name{bayesLife-internal}
 \alias{bdem.parameter.traces}
+\alias{e0.DLisDecrement}
+\alias{e0.get.dlcurves}
 \alias{get.countries.index.bayesLife.mcmc.meta}
 \alias{get.data.matrix.bayesLife.mcmc.meta}
 \alias{get.data.imputed.bayesLife.prediction}
@@ -13,6 +15,10 @@
 \alias{get.UN.variant.names.bayesLife.prediction}
 \alias{store.bayesLife.convergence}
 \alias{store.bayesLife.prediction}
+
+%datasets
+\alias{loess.sd}
+
 \title{
 Internal Functions and datasets of bayesLife
 }
