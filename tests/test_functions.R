@@ -14,12 +14,12 @@ test.get.wpp.data <- function(wpp.year=2008) {
 	test.ok(test.name)
 }
 
-test.estimate.mcmc <- function() {
+test.estimate.mcmc <- function(compression='None') {
 	sim.dir <- tempfile()
     # run MCMC
     test.name <- 'estimating MCMC'
 	start.test(test.name)
-    m <- run.e0.mcmc(nr.chains=1, iter=10, thin=1, output.dir=sim.dir)
+    m <- run.e0.mcmc(nr.chains=1, iter=10, thin=1, output.dir=sim.dir, buffer=5, compression.type=compression)
     stopifnot(m$mcmc.list[[1]]$finished.iter == 10)
 	stopifnot(get.total.iterations(m$mcmc.list, 0) == 10)
 	test.ok(test.name)
@@ -52,6 +52,8 @@ test.estimate.mcmc <- function() {
 	stopifnot(all(dim(pred$joint.male$quantiles) == dim(pred$quantiles)))
 	stopifnot(dim(pred$joint.male$quantiles)[3] == 19)
 	npred <- dim(pred$e0.matrix.reconstructed)[2]
+	t <- e0.trajectories.table(pred, "Australia", pi=80, both.sexes=TRUE)
+	stopifnot(all(dim(t) == c(30, 3)))
 	test.ok(test.name)
 	
 	# run MCMC for another aggregation
@@ -100,12 +102,12 @@ test.estimate.mcmc <- function() {
 }
 
 
-test.estimate.mcmc.with.suppl.data <- function() {
+test.estimate.mcmc.with.suppl.data <- function(compression='None') {
 	sim.dir <- tempfile()
     # run MCMC
     test.name <- 'estimating MCMC using supplemental data'
 	start.test(test.name)
-    m <- run.e0.mcmc(nr.chains=1, iter=30, thin=1, output.dir=sim.dir, start.year=1750, seed=1)
+    m <- run.e0.mcmc(nr.chains=1, iter=30, thin=1, output.dir=sim.dir, start.year=1750, seed=1, buffer=10, compression.type=compression)
     stopifnot(length(m$meta$suppl.data$regions$country_code) == 29)
 	stopifnot(all(dim(m$meta$suppl.data$e0.matrix) == c(40, 29)))
 	test.ok(test.name)
@@ -159,11 +161,12 @@ test.existing.simulation <- function() {
 	start.test(test.name)
 	pred <- get.e0.prediction(sim.dir)
 	s <- summary(pred, country='Japan')
-	stopifnot(s$nr.traj == 30)
+	stopifnot(s$nr.traj == 26)
 	stopifnot(all(dim(s$projections)==c(19,11)))
-	mb <- get.thinned.e0.mcmc(m, thin=2, burnin=30)
-	s <- summary(mb, meta.only=TRUE)
-	stopifnot(s$iters == 30)
+	# comment out if thinned mcmcs are not included in the package
+	#mb <- get.thinned.e0.mcmc(m, thin=2, burnin=30)
+	#s <- summary(mb, meta.only=TRUE)
+	#stopifnot(s$iters == 30)
 	test.ok(test.name)
 }
 
@@ -203,6 +206,25 @@ test.e0trajectories <- function() {
 	test.ok(test.name)
 }
 
+test.plot.all <- function() {
+	test.name <- 'plotting e0 trajectories and DL curves for all countries'
+	start.test(test.name)
+	sim.dir <- file.path(.find.package("bayesLife"), "ex-data", 'bayesLife.output')
+	pred <- get.e0.prediction(sim.dir=sim.dir)
+	mc <- get.e0.mcmc(sim.dir)
+	dir <- tempfile()
+	dir.create(dir)
+	e0.trajectories.plot.all(pred, output.dir=dir, main='XXX trajs')
+	trajf <- length(list.files(dir, pattern='png$', full.names=FALSE))
+	e0.DLcurve.plot.all(mc, output.dir=dir, main='DL XXX', output.type='jpeg')
+	dlf <- length(list.files(dir, pattern='jpeg$', full.names=FALSE))
+	unlink(dir, recursive=TRUE)
+	stopifnot(trajf == get.nr.countries(mc$meta))
+	stopifnot(dlf == get.nr.countries(mc$meta))
+	test.ok(test.name)
+}
+
+
 test.plot.density <- function() {
 	test.name <- 'plotting parameter density'
 	start.test(test.name)
@@ -224,7 +246,7 @@ test.plot.map <- function() {
 	sim.dir <- file.path(.find.package("bayesLife"), "ex-data", 'bayesLife.output')
 	pred <- get.e0.prediction(sim.dir=sim.dir)
 	filename <- tempfile()
-	e0.map(pred, projection.year=2098, device='png', device.args=list(filename=filename))
+	e0.map(pred, year=2098, device='png', device.args=list(filename=filename))
 	dev.off()
 	size <- file.info(filename)['size']
 	unlink(filename)
@@ -236,7 +258,7 @@ test.plot.map <- function() {
 	sim.dir <- file.path(.find.package("bayesLife"), "ex-data", 'bayesLife.output')
 	pred <- get.e0.prediction(sim.dir=sim.dir)
 	filename <- tempfile()
-	e0.map(pred, projection.year=1974, device='png', device.args=list(filename=filename))
+	e0.map(pred, year=1974, device='png', device.args=list(filename=filename))
 	dev.off()
 	size <- file.info(filename)['size']
 	unlink(filename)
@@ -277,12 +299,12 @@ test.get.parameter.traces <- function() {
 	test.ok(test.name)
 }
 
-test.run.mcmc.simulation.auto <- function() {
+test.run.mcmc.simulation.auto <- function(compression='None') {
 	sim.dir <- tempfile()
 	# run MCMC
 	test.name <- 'running auto MCMC'
 	start.test(test.name)
-	m <- run.e0.mcmc(iter='auto', output.dir=sim.dir, thin=1,
+	m <- run.e0.mcmc(iter='auto', output.dir=sim.dir, thin=1, compression.type=compression,
 					auto.conf=list(iter=10, iter.incr=5, max.loops=3, nr.chains=2, thin=1, burnin=5))
 	stopifnot(get.total.iterations(m$mcmc.list, 0) == 40)
 	test.ok(test.name)
@@ -302,7 +324,8 @@ test.estimate.mcmc.with.overwrites <- function() {
 	start.test(test.name)
 	overwrites <- data.frame(country_code=c(562, 686), #Niger, Senegal (index 17, 18)
 							k.c.prior.up=c(5, 7),
-							Triangle_3.c.prior.low=c(NA, 0)
+							Triangle_3.c.prior.low=c(NA, 0),
+							Triangle_3.c.prior.up=c(0, NA)
 						)
 	# run MCMC
     m <- run.e0.mcmc(nr.chains=1, iter=50, thin=1, output.dir=sim.dir, 
@@ -316,7 +339,7 @@ test.estimate.mcmc.with.overwrites <- function() {
     #check traces		
     traces.Niger <- get.e0.parameter.traces.cs(m$mcmc.list, get.country.object('Niger', m$meta), 
     					par.names=c('Triangle.c', 'k.c'))
-	stopifnot(all(traces.Niger[,'k.c_c562'] <= 5) && any(traces.Niger[,'Triangle.c_3_c562'] < 0))
+	stopifnot(all(traces.Niger[,'k.c_c562'] <= 5) && all(traces.Niger[,'Triangle.c_3_c562'] <= 0))
 	traces.Sen <- get.e0.parameter.traces.cs(m$mcmc.list, get.country.object('Senegal', m$meta), 
     					par.names=c('Triangle.c', 'k.c'))
 	stopifnot(any(traces.Sen[,'k.c_c686'] > 5) && all(traces.Sen[,'k.c_c686'] < 7) && all(traces.Sen[,'Triangle.c_3_c686'] >= 0))

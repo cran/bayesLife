@@ -5,17 +5,18 @@
 Prediction of the Joint Female-Male Model
 }
 \description{
-Prediction of the joint female-male model of life expectancy, as described in Lalic (2011).
+Prediction of the joint female-male model of life expectancy, as described in Raftery et al. (2012) and Lalic (2011).
 }
 \usage{
 e0.jmale.predict(e0.pred, estimates = NULL, gap.lim = c(0, 18), 
-    my.e0.file = NULL, verbose = TRUE, \dots)
+    min.e0.eq2.pred = 80, my.e0.file = NULL, verbose = TRUE, \dots)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
   \item{e0.pred}{Object of class \code{\link{bayesLife.prediction}} containing female projections of life expectancy.}
   \item{estimates}{List of the same structure as returned by \code{\link{e0.jmale.estimate}}, containing the model estimation results. If it is not given, the \code{\link{e0.jmale.estimate}} function is invoked.}
   \item{gap.lim}{Vector of length two giving the minimum and maximum bounds for the female-male life expectancy gaps.}
+ \item{min.e0.eq2.pred}{Minimum female life expectancy for male projections handled by the second equation (parameter \eqn{M} in Equation (1) in Raftery et al. (2012)).}
   \item{my.e0.file}{File name containing user-specified male time series for one or more countries. The function replaces the corresponding country data from the UN WPP file by values in this file. Only columns are replaced that match column names of the WPP file.}
   \item{verbose}{Logical switching log messages on and off.}
   \item{\dots}{Further arguments passed to \code{\link{e0.jmale.estimate}}.}
@@ -31,6 +32,8 @@ The predicted gaps can be viewed using the \code{\link{e0.gap.plot}} function.
 	Updated \code{e0.pred} object where a new component was added, called \code{joint.male}. It is also an object of class \code{\link{bayesLife.prediction}} and it contains results from this prediction.
 }
 \references{
+A. E. Raftery,  N. Li, H. Sevcikova , P. Gerland, G. K. Heilig (2012). Bayesian probabilistic population projections for all countries. Proceedings of the National Academy of Sciences 109:13915-13921.
+	
 Lalic, N. (2011). Master's thesis at the Department of Statistics, University of Washington. 
 }
 \author{
@@ -41,6 +44,7 @@ Hana Sevcikova
 \code{\link{e0.jmale.estimate}}, \code{\link{get.e0.jmale.prediction}}, \code{\link{e0.predict}}, \code{\link{e0.gap.plot}}
 }
 \examples{
+\dontrun{
 sim.dir <- tempfile()
 m <- run.e0.mcmc(sex='F', nr.chains=1, iter=30, thin=1, output.dir=sim.dir)
 pred <- e0.predict(m, burnin=15, verbose=FALSE, save.as.ascii=0)
@@ -58,7 +62,7 @@ e0.gap.plot(both.pred, 'Guatemala')
 e0.joint.plot(both.pred, 'Guatemala', pi=80, years=c(2013, 2043, 2093))
 
 unlink(sim.dir, recursive=TRUE)
-}
+}}
 % Add one or more standard keywords, see file 'KEYWORDS' in the
 % R documentation directory.
 \keyword{ models }

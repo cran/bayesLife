@@ -29,7 +29,7 @@ run.e0.mcmc <- function(sex=c("Female", "Male"), nr.chains=3, iter=100000,
 						 country.overwrites = NULL,
 						 #Triangle.c.width = c(5, 5, 5, 5), k.c.width=0.5, z.c.width=0.06,
 						 nu=4, dl.p1=9, dl.p2=9, sumTriangle.lim = c(30, 110), constant.variance=FALSE,
-                         seed = NULL, parallel=FALSE, nr.nodes=nr.chains,
+                         seed = NULL, parallel=FALSE, nr.nodes=nr.chains, compression.type='None',
                          auto.conf = list(max.loops=5, iter=100000, iter.incr=20000, nr.chains=3, thin=120, burnin=20000),
 						 verbose=FALSE, verbose.iter = 10, ...) {
 						 	
@@ -107,7 +107,7 @@ run.e0.mcmc <- function(sex=c("Female", "Male"), nr.chains=3, iter=100000,
                                         country.overwrites=country.overwrites, 
                                         nu=nu, dl.p1=dl.p1, dl.p2=dl.p2, sumTriangle.lim=sumTriangle.lim, 
                                         constant.variance=constant.variance,
-                                        buffer.size=buffer.size, 
+                                        buffer.size=buffer.size, compression.type=compression.type, 
                                         auto.conf=auto.conf, verbose=verbose)
     store.bayesLife.meta.object(bayesLife.mcmc.meta, output.dir)
     
@@ -308,7 +308,7 @@ run.e0.mcmc.extra <- function(sim.dir=file.path(getwd(), 'bayesLife.output'),
 }
 	
 e0.mcmc.run.chain.extra <- function(chain.id, mcmc.list, countries, posterior.sample, 
-												iter=NULL, burnin=2000, verbose=FALSE, verbose.iter=10) {
+												iter=NULL, burnin=2000, verbose=FALSE, verbose.iter=100) {
 	cat('\n\nChain nr.', chain.id, '\n')
 	if (verbose)
 		cat('************\n')
@@ -330,7 +330,7 @@ init.nodes.e0 <- function() {
 }
 
 .do.part.e0.mcmc.meta.ini <- function(data, meta) {
-	data(loess_sd)
+	data('loess_sd')
 	nr_countries <- ncol(data$e0.matrix)
     #T_end_c <- rep(NA, nr_countries)
     Tc.index <- list()
@@ -464,7 +464,8 @@ e0.mcmc.ini <- function(chain.id, mcmc.meta, iter=100,
 						lambda.k=lambda.k.ini, lambda.z=lambda.z.ini, omega=omega.ini,
         				output.dir=paste('mc', chain.id, sep=''), finished.iter=1, length = 1,
         				iter=iter, id=chain.id, traces=0,
-        				traces.burnin=0, rng.state = .Random.seed, 
+        				traces.burnin=0, rng.state = .Random.seed,
+        				compression.type=mcmc.meta$compression.type,
         				meta = mcmc.meta), class='bayesLife.mcmc')
     samplpars <- mcmc.meta$country.bounds
     mcmc[['Triangle.c']] <- matrix(0, ncol=nr_countries, nrow=4)
@@ -498,10 +499,12 @@ e0.mcmc.meta.ini.extra <- function(mcmc.set, countries=NULL, my.e0.file = NULL,
 	update.Tc.index <- function(Tci, eTci, id.replace, is.old) {
 		nTci <- Tci
 		j <- length(Tci) + 1
+		old.counter <- 1
 		for (i in 1:length(eTci)) {
-			if (is.old[i])
-				nTci[[id.replace[i]]] <- eTci[[i]]
-			else {
+			if (is.old[i]) {
+				nTci[[id.replace[old.counter]]] <- eTci[[i]]
+				old.counter <- old.counter + 1
+			} else {
 				nTci[[j]] <- eTci[[i]]
 				j <- j+1
 			}
@@ -556,7 +559,7 @@ e0.mcmc.meta.ini.extra <- function(mcmc.set, countries=NULL, my.e0.file = NULL,
 	if(!is.null(Emeta$suppl.data$e0.matrix)) {
 		suppl.id.replace <- meta$suppl.data$index.from.all.countries[id.replace]
 		suppl.id.replace <- suppl.id.replace[!is.na(suppl.id.replace)]
-		suppl.is.old <- which(is.old)[which(is.element(id.replace, suppl.id.replace))]
+		suppl.is.old <- which(is.old)[which(is.element(meta$suppl.data$index.from.all.countries[id.replace], suppl.id.replace))]
 		suppl.old <- Emeta$suppl.data$index.from.all.countries[suppl.is.old]
 		suppl.is.new <- which(is.new & !is.na(Emeta$suppl.data$index.from.all.countries))
 		suppl.new <- Emeta$suppl.data$index.from.all.countries[suppl.is.new]
@@ -571,12 +574,14 @@ e0.mcmc.meta.ini.extra <- function(mcmc.set, countries=NULL, my.e0.file = NULL,
 		new.meta$suppl.data$regions <- update.regions(meta$suppl.data$regions, Emeta$suppl.data$regions, 
 												suppl.id.replace, suppl.new, suppl.old)
 		n.new <- ncol(new.meta$suppl.data$e0.matrix) - ncol(meta$suppl.data$e0.matrix)
+		new.meta$suppl.data$index.from.all.countries <- meta$suppl.data$index.from.all.countries
+		new.meta$suppl.data$index.to.all.countries <- meta$suppl.data$index.to.all.countries
+		new.meta$suppl.data$nr.countries <- ncol(new.meta$suppl.data$e0.matrix)
 		if (n.new > 0) {
-			new.meta$suppl.data$nr.countries <- ncol(new.meta$suppl.data$e0.matrix)
-			new.meta$suppl.data$index.from.all.countries <- c(meta$suppl.data$index.from.all.countries, rep(NA, sum(is.new)))
+			new.meta$suppl.data$index.from.all.countries <- c(new.meta$suppl.data$index.from.all.countries, rep(NA, sum(is.new)))
 			new.meta$suppl.data$index.from.all.countries[meta$nr.countries + suppl.is.new] <- seq(meta$suppl.data$nr.countries + 1, 
 												length=n.new)
-			new.meta$suppl.data$index.to.all.countries <- c(meta$suppl.data$index.to.all.countries, 
+			new.meta$suppl.data$index.to.all.countries <- c(new.meta$suppl.data$index.to.all.countries, 
 											seq(meta$nr.countries+1, new.meta$nr.countries)[suppl.is.new])
 		}
 	}

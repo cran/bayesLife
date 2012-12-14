@@ -31,7 +31,7 @@ export(
 	has.e0.jmale.prediction,
 	get.e0.convergence.all,
 	get.e0.convergence,
-	e0.GoF.dl,
+	e0.dl.coverage,
 	e0.parameter.names.extended,
 	e0.parameter.names.cs.extended,
 	e0.parameter.names,
@@ -96,6 +96,7 @@ S3method(get.data.matrix, bayesLife.mcmc.meta)
 S3method(get.countries.index, bayesLife.mcmc.meta)
 
 S3method(get.data.imputed, bayesLife.prediction)
+S3method(get.data.imputed.for.country, bayesLife.prediction)
 S3method(get.projection.summary.header, bayesLife.prediction)
 S3method(get.UN.variant.names, bayesLife.prediction)
 S3method(get.friendly.variant.names, bayesLife.prediction)

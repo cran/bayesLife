@@ -112,8 +112,9 @@ get.e0.convergence <- function(sim.dir=file.path(getwd(), 'bayesLife.output'),
 					' and thin=', thin, ' does not exist.')
 		return(NULL)
 	}
-	load(file.name)
-	return(bayesLife.convergence)
+	bayesTFR.convergence <- local({load(file.name)
+				  					bayesTFR.convergence})
+	return(bayesTFR.convergence)
 }
 
 get.e0.parameter.traces <- function(mcmc.list, par.names=e0.parameter.names(), burnin=0,
@@ -325,6 +326,7 @@ create.thinned.e0.mcmc <- function(mcmc.set, thin=1, burnin=0, output.dir=NULL, 
 	thinned.mcmc$traces <- 0
 	thinned.mcmc$length <- nr.points
 	thinned.mcmc$finished.iter <- nr.points
+	thinned.mcmc$compression.type <- meta$compression.type
 	
 	outdir.thin.mcmc <- file.path(meta$output.dir, 'mc1')
 	if(!file.exists(outdir.thin.mcmc)) dir.create(outdir.thin.mcmc)
@@ -335,7 +337,7 @@ create.thinned.e0.mcmc <- function(mcmc.set, thin=1, burnin=0, output.dir=NULL, 
 	for (par in e0.parameter.names()) {
 		values <- get.e0.parameter.traces(mcmc.set$mcmc.list, par, burnin,
 											thinning.index=thin.index)
-		bayesTFR:::write.values.into.file.cindep(par, values, outdir.thin.mcmc)
+		bayesTFR:::write.values.into.file.cindep(par, values, outdir.thin.mcmc, compression.type=thinned.mcmc$compression.type)
 	}
 	if(verbose) cat('done.')
 	.store.country.specific.traces(mcmc.set, 1:mcmc.set$meta$nr.countries, burnin, thin.index, outdir=outdir.thin.mcmc, verbose=verbose)
@@ -365,15 +367,41 @@ create.thinned.e0.mcmc.extra <- function(mcmc.set, thinned.mcmc.set, countries, 
 		for (par in par.names.cs) {
 			values <- get.e0.parameter.traces.cs(mcmc.set$mcmc.list, country.obj, par, 
 											burnin=burnin, thinning.index=thin.index)
-			bayesTFR:::write.values.into.file.cdep(par, values, outdir, country.code=country.obj$code)
+			bayesTFR:::write.values.into.file.cdep(par, values, outdir, country.code=country.obj$code,
+						compression.type=mcmc.set$meta$compression.type)
 		}
 	}	
 }
 
-get.e0.trajectories <- function(e0.pred, country) 
+get.e0.trajectories <- function(e0.pred, country) {
+	# country can be a name; returns only trajectories
 	return(bayesTFR:::get.tfr.trajectories(e0.pred, country=country))
-	
-	
+}
+
+get.e0.trajectories.object <- function(e0.pred, country, nr.traj=NULL, typical.trajectory=FALSE, pi=NULL, ...) {
+	# here country must be a code; returns also indices
+	if(is.list(e0.pred) && class(e0.pred[[1]]) == 'bayesLife.prediction' && class(e0.pred[[2]]) == 'bayesLife.prediction'){
+		traj1 <- bayesTFR:::get.trajectories(e0.pred[[1]], country, nr.traj=NULL, ...) # we want all trajectories
+		traj2 <- bayesTFR:::get.trajectories(e0.pred[[2]], country, nr.traj=NULL, ...)
+		traj.res <- traj1$trajectories - (traj1$trajectories - traj2$trajectories)/2.
+		if(typical.trajectory) 
+			traj.idx <- bayesTFR:::get.typical.trajectory.index(traj.res)
+		else {
+			thintraj <- bayesTFR:::get.thinning.index(nr.traj, dim(traj.res)[2]) 
+			traj.idx <- thintraj$index
+		}
+		cqp <- list()
+		if(!is.null(pi)) {
+			for(i in 1:length(pi)) {
+				al <- (1-pi[i]/100)/2
+				cqp[[i]] <- apply(traj.res, 1, quantile, c(al, 1-al), na.rm = TRUE)
+			}
+		}
+		return(list(trajectories=traj.res, index=traj.idx, median=apply(traj.res, 1, median, na.rm=TRUE), quantiles=cqp))
+	}
+	return(bayesTFR:::get.trajectories(e0.pred, country, nr.traj=nr.traj, typical.trajectory=typical.trajectory, ...))
+}
+
 get.nr.countries.bayesLife.mcmc.meta <- function(meta, ...) return (meta$nr.countries)
 get.nr.countries.est.bayesLife.mcmc.meta <- function(meta, ...) return (meta$nr.countries.estimation)
 

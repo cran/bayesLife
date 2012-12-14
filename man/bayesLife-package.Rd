@@ -13,9 +13,9 @@ using a Bayesian hierarchical model and the United Nations demographic time seri
 \tabular{ll}{
 Package: \tab bayesLife\cr
 Type: \tab Package\cr
-Version: \tab 0.4-0\cr
-Date: \tab 2012-05-03\cr
-Depends: \tab R (>= 2.9.0), bayesTFR\cr
+Version: \tab 0.6-0\cr
+Date: \tab 2012-12-14\cr
+Depends: \tab R (>= 2.14.2), bayesTFR\cr
 License: \tab GPL (>= 2)\cr
 URL: \tab \url{http://bayespop.csss.washington.edu}\cr
 }
@@ -38,7 +38,7 @@ A number of functions analyzing results are included in the package:
 \item \link{summary.bayesLife.mcmc.set}: Summary function for the MCMC results.
 \item \link{summary.bayesLife.prediction}: Summary function for the prediction results.
 }
-For MCMC diagnostics, function \link{e0.coda.list.mcmc} creates an object of type \dQuote{mcmc.list} that can be used with the \pkg{coda} package.  Furthermore, function \link{e0.diagnose} analyzes the MCMCs using the Raftery diagnostics implemented in the \pkg{coda} package and gives information about parameters that did not converge. Function \link{e0.GoF.dl} computes a goodness of fit of the double logistic function.
+For MCMC diagnostics, function \link{e0.coda.list.mcmc} creates an object of type \dQuote{mcmc.list} that can be used with the \pkg{coda} package.  Furthermore, function \link{e0.diagnose} analyzes the MCMCs using the Raftery diagnostics implemented in the \pkg{coda} package and gives information about parameters that did not converge. Function \link{e0.dl.coverage} computes a goodness of fit of the double logistic function.
 
 Existing simulation results can be accessed using the \link{get.e0.mcmc} function.  An existing prediction can be accessed via \link{get.e0.prediction}.
 
@@ -58,7 +58,9 @@ Maintainer: Hana Sevcikova <hanas@uw.edu>
 \references{
 J. L. Chunn, A. E. Raftery, P. Gerland (2010): Bayesian Probabilistic Projections of Life Expectancy for All Countries.  Working Paper nr. 105, Center for Statistics and the Social Sciences, University of Washington. \url{http://www.csss.washington.edu/Papers}
 
-Lalic, N. (2011). Master's thesis at the Department of Statistics, University of Washington.
+A. E. Raftery,  N. Li, H. Sevcikova , P. Gerland, G. K. Heilig (2012). Bayesian probabilistic population projections for all countries. Proceedings of the National Academy of Sciences 109:13915-13921.
+
+%Lalic, N. (2011). Master's thesis at the Department of Statistics, University of Washington.
 }
 
 \keyword{ package }
@@ -70,7 +72,10 @@ Lalic, N. (2011). Master's thesis at the Department of Statistics, University of
 sim.dir <- tempfile()
 m <- run.e0.mcmc(sex='F', nr.chains=2, iter=60, seed=1, thin=2, 
      output.dir=sim.dir, verbose=TRUE)
-pred <- e0.predict(m, burnin=30, verbose=TRUE)
+pred <- e0.predict(m, burnin=35, verbose=TRUE)
 summary(pred, country="Canada")
 unlink(sim.dir, recursive=TRUE)}
 }
+% exact commands to create data in ex-data directory
+% m <- run.e0.mcmc(sex='F', nr.chains=2, iter=60, seed=1, thin=2, verbose=TRUE, compression.type='bz', start.year=1950)
+% pred <- e0.predict(m, burnin=35, verbose=TRUE, predict.jmale=FALSE) 

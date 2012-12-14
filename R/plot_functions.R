@@ -1,29 +1,8 @@
-.do.plot.all <- function(meta, output.dir, func, output.type="png", 
-						file.prefix='e0plot', plot.type='e0 graph',
-						verbose=FALSE, ...) {
-	# processes plotting function func for all countries
-	if(!file.exists(output.dir)) dir.create(output.dir, recursive=TRUE)
-	all.countries <- country.names(meta)
-	postfix <- output.type
-	if(output.type=='postscript') postfix <- 'ps'
-	for (country in all.countries) {
-		country.obj <- get.country.object(country, meta)
-		if(verbose)
-			cat('Creating', plot.type, 'for', country, '(', country.obj$code, ')\n')
-
-		do.call(output.type, list(file.path(output.dir, 
-										paste(file.prefix,'_c', country.obj$code, '.', postfix, sep=''))))
-		do.call(func, list(country=country.obj$code, ...))
-		dev.off()
-	}
-	if(verbose)
-		cat('\nPlots stored into', output.dir, '\n')					
-}
 
 e0.gap.plot.all <- function(e0.pred, output.dir=file.path(getwd(), 'e0gaps'),
 							output.type="png", verbose=FALSE, ...) {
 	# plots e0 gaps for all countries
-	.do.plot.all(e0.pred$mcmc.set$meta, output.dir, e0.gap.plot, output.type=output.type, 
+	bayesTFR:::.do.plot.all(e0.pred$mcmc.set$meta, output.dir, e0.gap.plot, output.type=output.type, 
 		file.prefix='e0gap', plot.type='e0 gap graph', verbose=verbose, e0.pred=e0.pred, ...)
 }
 
@@ -106,7 +85,7 @@ e0.gap.plot <- function(e0.pred, country, e0.pred2=NULL, pi=c(80, 95), nr.traj=0
 e0.joint.plot.all <- function(e0.pred, output.dir=file.path(getwd(), 'e0joint'),
 							output.type="png", verbose=FALSE, ...) {
 	# plots e0 joint projections for all countries
-	.do.plot.all(e0.pred$mcmc.set$meta, output.dir, e0.joint.plot, output.type=output.type, 
+	bayesTFR:::.do.plot.all(e0.pred$mcmc.set$meta, output.dir, e0.joint.plot, output.type=output.type, 
 		file.prefix='e0jplot', plot.type='e0 joint F-M graph', verbose=verbose, e0.pred=e0.pred, ...)
 }
 
@@ -119,9 +98,9 @@ e0.joint.plot <- function(e0.pred, country, pi=95, years, nr.points=500,
 	years.idx <- years.idx[years.idx > 1]
 	if(length(years.idx) <= 0) 
 		stop('Argument years must have values within the range [', 
-							pred$end.year - pred$nr.projections*5, ',', pred$end.year, '].')
+							e0.pred$end.year - e0.pred$nr.projections*5, ',', e0.pred$end.year, '].')
 	if(length(years.idx) != length(years))
-		warning('Some years invalid. Valid range: [', pred$end.year - pred$nr.projections*5, ',', pred$end.year, '].')
+		warning('Some years invalid. Valid range: [', e0.pred$end.year - e0.pred$nr.projections*5, ',', e0.pred$end.year, '].')
 		
 	require(car)
 	
@@ -137,7 +116,7 @@ e0.joint.plot <- function(e0.pred, country, pi=95, years, nr.points=500,
 		country.obj <- get.country.object(country, e0.pred$mcmc.set$meta)
 		if(is.null(main)) main <- country.obj$name
 		plot(c(minxy, maxxy), c(minxy, maxxy), type='n', xlab=xlab, ylab=ylab, 
-				xlim=xlim, ylim=ylim, main=main, panel.first = grid())
+				xlim=xlim, ylim=ylim, main=main, panel.first = grid(), ...)
 		abline(0,1)
 	}
 	col <- if(is.null(col)) rainbow(length(years.idx)) else rep(col, length(years.idx))
@@ -165,7 +144,7 @@ e0.joint.plot <- function(e0.pred, country, pi=95, years, nr.points=500,
 				el <- ellips[[as.character(pi[ipi]/100)]]
 				above <- el[,'x'] < el[,'y']
 				el[above,'y']<- el[above,'x']
-				lines(el, col=col[iyear], ...)
+				lines(el, col=col[iyear])
 			}
 			#contour(dens, levels=cibounds, drawlabels=TRUE, labels=pi, add=TRUE, col=col[iyear], ...)
 		}
@@ -182,7 +161,8 @@ e0.trajectories.plot.all <- function(e0.pred,
 									output.type="png", verbose=FALSE, ...) {
 										
 	# plots e0 trajectories for all countries
-	.do.plot.all(e0.pred$mcmc.set$meta, output.dir, e0.trajectories.plot, output.type=output.type, verbose=verbose, e0.pred=e0.pred, ...)
+	bayesTFR:::.do.plot.all(e0.pred$mcmc.set$meta, output.dir, e0.trajectories.plot, output.type=output.type, 
+		file.prefix='e0plot', plot.type='e0 graph', verbose=verbose, e0.pred=e0.pred, ...)
 }
 
 e0.trajectories.plot <- function(e0.pred, country, pi=c(80, 95), both.sexes=FALSE,
@@ -227,16 +207,25 @@ e0.trajectories.plot <- function(e0.pred, country, pi=c(80, 95), both.sexes=FALS
 	pred <- list(e0.pred)
 	plotcols <- list(col)
 	do.both.sexes <- FALSE
-	if(both.sexes == TRUE) {
+	do.average <- FALSE
+	if(both.sexes == TRUE || both.sexes == 'A') {
 		do.both.sexes <- TRUE
 		if(e0.pred$mcmc.set$meta$sex != 'F') {
-			warnings('If both.sexes is TRUE, the given prediction obect must be Female prediction, but is ',  
+			warnings('If both.sexes is TRUE, the given prediction object must be Female prediction, but is ',  
 					get.sex.label(e0.pred$mcmc.set$meta))
 			do.both.sexes <- FALSE
-		}
-		if(!has.e0.jmale.prediction(e0.pred)) {
-			warnings('A male prediction does not exist for the given prediction object.')
-			do.both.sexes <- FALSE
+		} else {
+			if(!has.e0.jmale.prediction(e0.pred)) {
+				warnings('A male prediction does not exist for the given prediction object.')
+				do.both.sexes <- FALSE
+			} else {
+				if(both.sexes == 'A') { # average e0
+					pred <- c(pred, list(get.e0.jmale.prediction(e0.pred)))
+					do.average <- TRUE
+					do.both.sexes <- FALSE
+				}
+			}
+
 		}
 		if(do.both.sexes) {
 			pred <- c(pred, list(get.e0.jmale.prediction(e0.pred)))
@@ -295,12 +284,21 @@ e0.trajectories.plot <- function(e0.pred, country, pi=c(80, 95), both.sexes=FALS
     		ylim.loc <- c(min(ylim.loc[1], plot.data[[ipred]]$rec.y), max(ylim.loc[2], plot.data[[ipred]]$rec.y))
     	}
 	}
+	if(do.average) {
+		plot.data[[1]]$obs.y <- plot.data[[1]]$obs.y - (plot.data[[1]]$obs.y-plot.data[[2]]$obs.y)/2.
+		if(lpart2 > 0) plot.data[[1]]$rec.y - (plot.data[[1]]$rec.y-plot.data[[2]]$rec.y)/2.
+	}
 	for(ipred in 1:length(pred)) {
 		e0pred <- pred[[ipred]]
 		this.col <- plotcols[[ipred]]
 		meta <- e0pred$mcmc.set$meta
-		trajectories <- bayesTFR:::get.trajectories(e0pred, country$code, nr.traj, typical.trajectory=typical.trajectory)
-		e0.median <- bayesTFR:::get.median.from.prediction(e0pred, country$index, country$code)
+		if(do.average) {
+			trajectories <- get.e0.trajectories.object(pred, country$code, nr.traj=nr.traj, typical.trajectory=typical.trajectory, pi=pi)
+			e0.median <- trajectories$median
+		} else {
+			trajectories <- get.e0.trajectories.object(e0pred, country$code, nr.traj=nr.traj, typical.trajectory=typical.trajectory)
+			e0.median <- bayesTFR:::get.median.from.prediction(e0pred, country$index, country$code)
+		}
 		cqp <- list()
 		if(ipred > 1) add <- TRUE
 		if(!add)
@@ -314,10 +312,12 @@ e0.trajectories.plot <- function(e0.pred, country, pi=c(80, 95), both.sexes=FALS
 					  ylim.loc[2], e0.median, na.rm=TRUE))
 		if(length(pi) > 0) {
 			for (i in 1:length(pi)) {
-				cqp[[i]] <- bayesTFR:::get.traj.quantiles(e0pred, country$index, 
+				if(do.average) cqp[[i]] <- trajectories$quantiles[[i]]
+				else
+					cqp[[i]] <- bayesTFR:::get.traj.quantiles(e0pred, country$index, 
 								country$code, trajectories=trajectories$trajectories, pi=pi[i])
 				if (!add && !is.null(cqp[[i]]) && is.null(ylim))
-					ylim.loc <- c(min(ylim.loc[1], cqp[[i]], na.rm=TRUE), 
+						ylim.loc <- c(min(ylim.loc[1], cqp[[i]], na.rm=TRUE), 
 						  		max(ylim.loc[2], cqp[[i]], na.rm=TRUE))
 			}
 		}
@@ -326,8 +326,11 @@ e0.trajectories.plot <- function(e0.pred, country, pi=c(80, 95), both.sexes=FALS
 			if(is.null(ylim)) ylim <- ylim.loc
 			if(is.null(main)) {
 				main <- country$name
-				if(!do.both.sexes)
-					main <- paste(main, '-', get.sex.label(meta))
+				if(do.average) main <- paste(main, '- average')
+				else { 
+					if(!do.both.sexes)
+						main <- paste(main, '-', get.sex.label(meta))
+				}
 			}
 		    # plot historical data: observed
 			plot(plot.data[[ipred]]$obs.x, plot.data[[ipred]]$obs.y, type=type, xlim=xlim, ylim=ylim, ylab=ylab, xlab=xlab, main=main, 
@@ -344,7 +347,7 @@ e0.trajectories.plot <- function(e0.pred, country, pi=c(80, 95), both.sexes=FALS
 		}
 	
 		# plot trajectories
-		if(!is.null(trajectories$trajectories)) { 
+		if(!is.null(trajectories$trajectories) && length(trajectories$index) > 0) { 
 			for (i in 1:length(trajectories$index)) {
 				lines(plot.data[[ipred]]$pred.x, trajectories$trajectories[,trajectories$index[i]], type='l', 
 					col=this.col[5], lwd=lwd[5])
@@ -384,16 +387,46 @@ e0.trajectories.plot <- function(e0.pred, country, pi=c(80, 95), both.sexes=FALS
 		cols.all <- c(cols.all, cols)
 		pch.all <- c(pch.all, pch)
 		lwd.all <- c(lwd.all, lwds)
+		if(do.average) break
 	}
 	if(show.legend)
 		legend('topleft', legend=legend.all, lty=lty.all, bty='n', col=cols.all, pch=pch.all, lwd=lwd.all)
-	#abline(h=1, lty=3)
-	#abline(h=1.5, lty=3)
-	#abline(h=2.1, lty=3)
 }
 
-e0.trajectories.table <- function(e0.pred, ...) {
-	return(tfr.trajectories.table(e0.pred, half.child.variant = FALSE, ...))
+e0.trajectories.table <- function(e0.pred, country, pi=c(80, 95), both.sexes=FALSE, ...) {
+	do.both.sexes <- FALSE
+	if(both.sexes==TRUE || both.sexes == 'A') {
+		do.both.sexes <- TRUE
+		if(e0.pred$mcmc.set$meta$sex != 'F') {
+			warnings('If both.sexes is TRUE, the given prediction object must be Female prediction, but is ',  
+					get.sex.label(e0.pred$mcmc.set$meta))
+			do.both.sexes <- FALSE
+		} else {
+			if(!has.e0.jmale.prediction(e0.pred)) {
+				warnings('A male prediction does not exist for the given prediction object.')
+				do.both.sexes <- FALSE
+			} else {
+				if(both.sexes == 'A') { # average e0
+					mpred <- get.e0.jmale.prediction(e0.pred)
+					fdata <- get.data.imputed(e0.pred)
+					mdata <- get.data.imputed(mpred)
+					data.matrix <- fdata - (fdata - mdata)/2.
+					country.obj <- get.country.object(country, e0.pred$mcmc.set$meta)
+					traj.object <- get.e0.trajectories.object(list(e0.pred, mpred), country.obj$code, pi=pi)
+					return(bayesTFR:::.get.trajectories.table(e0.pred, country.obj, data.matrix[,country.obj$index], pi, 
+								pred.median=traj.object$median, cqp=traj.object$quantiles, half.child.variant=FALSE))
+				}
+			}
+		}
+	}
+	result <- tfr.trajectories.table(e0.pred, country=country, pi=pi, half.child.variant = FALSE, ...)
+	if(do.both.sexes) {
+		result <- list(female=result,
+						male=tfr.trajectories.table(get.e0.jmale.prediction(e0.pred), country=country, pi=pi, 
+										half.child.variant = FALSE, ...))
+		
+	}
+	return(result)
 }
 
 e0.DLcurve.plot.all <- function (mcmc.list = NULL, sim.dir = NULL, 
@@ -403,7 +436,7 @@ e0.DLcurve.plot.all <- function (mcmc.list = NULL, sim.dir = NULL,
 	if(is.null(mcmc.list)) mcmc.list <- get.e0.mcmc(sim.dir=sim.dir, verbose=verbose, burnin=burnin)
 	mc <- get.mcmc.list(mcmc.list)
 	meta <- mc[[1]]$meta
-	.do.plot.all(meta, output.dir, e0.DLcurve.plot, output.type=output.type, 
+	bayesTFR:::.do.plot.all.country.loop(as.character(country.names(meta)), meta, output.dir, e0.DLcurve.plot, output.type=output.type, 
 		file.prefix='DLplot', plot.type='DL graph', verbose=verbose, mcmc.list = mcmc.list, burnin = burnin, ...)
 }
 

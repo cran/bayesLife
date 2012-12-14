@@ -51,7 +51,7 @@ e0.predict <- function(mcmc.set=NULL, end.year=2100, sim.dir=file.path(getwd(), 
 					replace.output=replace.output,  
 					nr.traj=nr.traj, thin=thin, burnin=burnin, save.as.ascii=save.as.ascii,
 					output.dir=output.dir, verbose=verbose)
-	if(predict.jmale && mcmc.set$meta$sex == 'F') 
+	if(predict.jmale && mcmc.set$meta$sex == 'F')
 		pred <- e0.jmale.predict(pred, ..., verbose=verbose)
 	invisible(pred)
 }
@@ -113,15 +113,15 @@ e0.predict.extra <- function(sim.dir=file.path(getwd(), 'bayesLife.output'),
 	} else {
 		# save updated prediction
 		bayesLife.prediction <- pred
-		prediction.file <- file.path(pred$output.dir, 'prediction.rda')
+		prediction.file <- file.path(pred$output.directory, 'prediction.rda')
 		save(bayesLife.prediction, file=prediction.file)
 	}
 	# convert trajectories and create summary files
-	bayesTFR:::do.convert.trajectories(pred=bayesLife.prediction, n=save.as.ascii, output.dir=pred$output.dir, 
+	bayesTFR:::do.convert.trajectories(pred=bayesLife.prediction, n=save.as.ascii, output.dir=pred$output.directory, 
 							verbose=verbose)
-	#do.write.projection.summary(pred=bayesLife.prediction, output.dir=pred$output.dir)
+	bayesTFR:::do.write.projection.summary(pred=bayesLife.prediction, output.dir=pred$output.directory)
 	
-	cat('\nPrediction stored into', pred$output.dir, '\n')
+	cat('\nPrediction stored into', pred$output.directory, '\n')
 	invisible(bayesLife.prediction)
 }
 
@@ -171,6 +171,7 @@ make.e0.prediction <- function(mcmc.set, end.year=2100, replace.output=FALSE,
 	thinned.mcmc <- get.thinned.e0.mcmc(mcmc.set, thin=thin, burnin=burnin)
 	has.thinned.mcmc <- (!is.null(thinned.mcmc) && thinned.mcmc$meta$parent.iter == total.iter 
 							&& mcmc.set$meta$nr.countries == thinned.mcmc$meta$nr.countries)
+	unblock.gtk('bDem.e0pred')
 	if(has.thinned.mcmc){
 		 if(create.thinned.mcmc.extra) 
 		 	load.mcmc.set <- create.thinned.e0.mcmc.extra(mcmc.set, thinned.mcmc, countries=countries, 
@@ -198,9 +199,22 @@ make.e0.prediction <- function(mcmc.set, end.year=2100, replace.output=FALSE,
 
 	var.par.names.cs <- c('Triangle.c', 'k.c', 'z.c')
 	
+	country.counter <- 0
+	status.for.gui <- paste('out of', length(prediction.countries), 'countries.')
+	gui.options <- list()
+	#########################################
 	for (country in prediction.countries){
 	#for (country in c(23)){
 	#########################################
+		if(getOption('bDem.e0pred', default=FALSE)) {
+			# This is to unblock the GUI, if the run is invoked from bayesDem
+			# and pass info about its status
+			# In such a case the gtk libraries are already loaded
+			country.counter <- country.counter + 1
+			gui.options$bDem.e0pred.status <- paste('finished', country.counter, status.for.gui)
+			unblock.gtk('bDem.e0pred', gui.options)
+		}
+
 		country.obj <- get.country.object(country, mcmc.set$meta, index=TRUE)
 		if (verbose) {			
  			cat('e0 projection for country', country, country.obj$name, 
@@ -307,9 +321,20 @@ write.e0.projection.summary <- function(dir=file.path(getwd(), 'bayesLife.output
 									 output.dir=NULL, revision=14) {
 # Writes two prediction summary files, one in a user-friendly format, one in a UN-format.
 	pred <- get.e0.prediction(sim.dir=dir)
-	if (is.null(output.dir)) output.dir <- pred$output.directory
-	if(!file.exists(output.dir)) dir.create(output.dir, recursive=TRUE)
-	bayesTFR:::do.write.projection.summary(pred, output.dir, revision=revision)
+	predsex <- pred$mcmc.set$meta$sex
+	preds <- list()
+	preds[[predsex]] <- pred
+	if(has.e0.jmale.prediction(pred)) preds[['M']] <- get.e0.jmale.prediction(pred)
+	for (sex in c('F', 'M')) {
+		if(is.null(preds[[sex]])) next
+		if (is.null(output.dir)) outdir <- preds[[sex]]$output.directory
+		else {
+			if(length(preds) > 1) outdir <- file.path(output.dir,sex)
+			else outdir <- output.dir
+		}
+		if(!file.exists(outdir)) dir.create(outdir, recursive=TRUE)
+		bayesTFR:::do.write.projection.summary(preds[[sex]], outdir, revision=revision)
+	}
 }
 		
 					
@@ -318,7 +343,11 @@ get.traj.ascii.header.bayesLife.mcmc.meta <- function(meta, ...)
 	
 get.data.imputed.bayesLife.prediction <- function(pred, ...)
 	return(get.e0.reconstructed(pred$e0.matrix.reconstructed, pred$mcmc.set$meta))
-
+	
+get.data.imputed.for.country.bayesLife.prediction <- function(pred, country.index, ...)
+	return(bayesTFR:::get.observed.with.supplemental(country.index, pred$e0.matrix.reconstructed, 
+					pred$mcmc.set$meta$suppl.data, 'e0.matrix.all'))
+	
 get.e0.reconstructed <- function(data, meta) {
 	return(if(is.null(data)) meta$e0.matrix.all else data)
 }
@@ -338,9 +367,10 @@ e0.median.set <- function(sim.dir, country, values, years=NULL) {
 e0.jmale.estimate <- function(mcmc.set, countries.index=NULL, 
 								estDof.eq1 = TRUE, start.eq1 = list(dof = 2), 
 								min.e0.eq2 = 80, estDof.eq2 = TRUE, start.eq2 = list(dof = 2), 
-								my.e0.file=NULL, verbose=FALSE) {
+								constant.gap.eq2=TRUE, my.e0.file=NULL, verbose=FALSE) {
 	# Estimate coefficients for joint prediction of female and male e0
 	require(hett)
+	unblock.gtk('bDem.e0pred', list(bDem.e0pred.status='estimating joint male'))
 	if (is.null(countries.index)) countries.index <- 1:get.nr.countries.est(mcmc.set$meta)
 	e0f.data <- get.data.matrix(mcmc.set$meta)[,countries.index]
 	e0m.data <- get.wpp.e0.data.for.countries(mcmc.set$meta, sex='M', my.e0.file=my.e0.file,
@@ -371,19 +401,27 @@ e0.jmale.estimate <- function(mcmc.set, countries.index=NULL,
 	data.eq2 <- data.eq1[data.eq1$e0 >= min.e0.eq2,]
 	if(verbose) 
 		cat('\n\nUsing', nrow(data.eq2), 'data points for equation 2.\n\n')
-	fit.eq2 <- tlm(G~-1+Gprev, data=data.eq2, start = start.eq2, estDof = estDof.eq2)
-	if(verbose)
-		print(summary(fit.eq2))
-	errscale.eq2<-as.numeric(exp(fit.eq2$scale.fit$coefficients[1]))
-	errsd.eq2<-sqrt(errscale.eq2)
+	if(!constant.gap.eq2) {
+		fit.eq2 <- tlm(G~-1+Gprev, data=data.eq2, start = start.eq2, estDof = estDof.eq2)
+		if(verbose)
+			print(summary(fit.eq2))
+		errscale.eq2<-as.numeric(exp(fit.eq2$scale.fit$coefficients[1]))
+		errsd.eq2<-sqrt(errscale.eq2)
+		coef2 <- fit.eq2$loc.fit$coefficients
+		dof2 <- fit.eq2$dof
+	} else {# constant gap in eq.2
+		dof2 <- NULL
+		coef2 <- c(Gprev=1)
+		errsd.eq2 <- sd(abs(data.eq2$G - data.eq2$Gprev))
+	}
 	return(list(eq1 = list(coefficients=fit.eq1$loc.fit$coefficients, 
-						   sigma=errsd.eq1, dof = fit.eq1$dof, fit=fit.eq1),
-				eq2 = list(coefficients=fit.eq2$loc.fit$coefficients,
-						   sigma=errsd.eq2, dof = fit.eq2$dof, fit=fit.eq2)
+						   sigma=errsd.eq1, dof = fit.eq1$dof),
+				eq2 = list(coefficients=coef2, sigma=errsd.eq2, dof = dof2)
 				))
 }
 
-e0.jmale.predict <- function(e0.pred, estimates=NULL, gap.lim=c(0,18), my.e0.file=NULL, verbose=TRUE, ...) {
+e0.jmale.predict <- function(e0.pred, estimates=NULL, gap.lim=c(0,18),  #gap.lim.eq2=c(3,9),	
+								min.e0.eq2.pred=80, my.e0.file=NULL, verbose=TRUE, ...) {
 	# Predicting male e0 from female predictions. estimates is the result of 
 	# the e0.jmale.estimate function. If it is NULL, the estimation is performed 
 	# using the ... arguments
@@ -406,18 +444,23 @@ e0.jmale.predict <- function(e0.pred, estimates=NULL, gap.lim=c(0,18), my.e0.fil
 	joint.male$meta.changes <- meta.changes
 	joint.male$mcmc.set <- NULL
 	joint.male$joint.male <- NULL
+	joint.male$pred.pars <- list(gap.lim=gap.lim, #gap.lim.eq2=gap.lim.eq2, 
+								min.e0.eq2.pred=min.e0.eq2.pred)
 	
 	if(file.exists(joint.male$output.directory)) unlink(joint.male$output.directory, recursive=TRUE)
 	dir.create(joint.male$output.directory, recursive=TRUE)
 	bayesLife.prediction <- .do.jmale.predict(e0.pred, joint.male, 1:get.nr.countries(meta),  
-								gap.lim=gap.lim, verbose=verbose)
+								gap.lim=gap.lim, #gap.lim.eq2=gap.lim.eq2, 
+								eq2.age.start=min.e0.eq2.pred, verbose=verbose)
 	save(bayesLife.prediction, file=prediction.file)
 	cat('\nPrediction stored into', joint.male$output.directory, '\n')
+	bayesTFR:::do.write.projection.summary(pred=get.e0.jmale.prediction(bayesLife.prediction), output.dir=joint.male$output.directory)
 	invisible(bayesLife.prediction)
 }
 
 .do.e0.jmale.predict.extra <- function(e0.pred, countries.idx, idx.other.to.new, idx.other.to.old,
-									gap.lim=c(0,18), my.e0.file=NULL, verbose=TRUE) {
+									gap.lim.eq1=c(0,18),  gap.lim.eq2=c(3,9), min.e0.eq2.pred=80, my.e0.file=NULL, 
+									verbose=TRUE) {
 	# called from e0.predict.extra
 	if (!has.e0.jmale.prediction(e0.pred)) stop('Joint female-male prediction must be available for e0.pred. Use e0.jmale.predict.')
 	joint.male <- get.e0.jmale.prediction(e0.pred)
@@ -430,7 +473,9 @@ e0.jmale.predict <- function(e0.pred, estimates=NULL, gap.lim=c(0,18), my.e0.fil
 	joint.male$e0.matrix.reconstructed <- e0m.data
 	joint.male$meta.changes <- meta.changes
 	
-	new.pred <- .do.jmale.predict(e0.pred, joint.male, countries.idx, gap.lim=gap.lim, verbose=verbose)
+	new.pred <- .do.jmale.predict(e0.pred, joint.male, countries.idx, gap.lim=joint.male$pred.pars$gap.lim, 
+									#gap.lim.eq2=joint.male$gap.lim.eq2,
+									eq2.age.start=joint.male$pred.pars$min.e0.eq2.pred, verbose=verbose)
 	new.jmale <- new.pred$joint.male
 	prev.jmale <- e0.pred$joint.male
 	joint.male$quantiles <- new.jmale$quantiles
@@ -451,7 +496,9 @@ e0.jmale.predict <- function(e0.pred, estimates=NULL, gap.lim=c(0,18), my.e0.fil
 }
 
 
-.do.jmale.predict <- function(e0.pred, joint.male, countries, gap.lim, verbose=FALSE) {
+.do.jmale.predict <- function(e0.pred, joint.male, countries, gap.lim, #gap.lim.eq2, 
+								eq2.age.start=NULL, verbose=FALSE) {
+	unblock.gtk('bDem.e0pred', list(bDem.e0pred.status='predicting joint male'))
 	bayesLife.prediction <- e0.pred
 	bayesLife.prediction$joint.male <- joint.male
 	meta <- e0.pred$mcmc.set$meta
@@ -460,7 +507,7 @@ e0.jmale.predict <- function(e0.pred, estimates=NULL, gap.lim=c(0,18), my.e0.fil
 	traj.mean.sd <- array(NA, dim(e0.pred$traj.mean.sd))
 	dimnames(traj.mean.sd) <- dimnames(e0.pred$traj.mean.sd)
 	e0f.data <- get.e0.reconstructed(e0.pred$e0.matrix.reconstructed, meta)
-	maxe0 <- max(e0f.data)
+	maxe0 <- if(is.null(eq2.age.start)) max(e0f.data) else eq2.age.start
 	e0m.data <- joint.male$meta.changes$e0.matrix
 	quantiles.to.keep <- as.numeric(dimnames(e0.pred$quantiles)[[2]])
 	estimates <- joint.male$fit
@@ -489,9 +536,13 @@ e0.jmale.predict <- function(e0.pred, estimates=NULL, gap.lim=c(0,18), my.e0.fil
 						Gt <- Gtdeterm + estimates$eq1$sigma*rt(1,estimates$eq1$dof)
 				} else {  # 2nd part of Equation 3.1
 					Gtdeterm <- estimates$eq2$coefficients['Gprev']*Gprev
-					Gt <- Gtdeterm + estimates$eq2$sigma*rt(1,estimates$eq2$dof)
-					while(Gt < gap.lim[1] || Gt > gap.lim[2]) 
-						Gt <- Gtdeterm + estimates$eq2$sigma*rt(1,estimates$eq2$dof)
+					error <- if(is.null(estimates$eq2$dof)) rnorm(1, sd=estimates$eq2$sigma) 
+								else estimates$eq2$sigma*rt(1,estimates$eq2$dof)
+					Gt <- Gtdeterm + error					
+					while(Gt < gap.lim[1] || Gt > gap.lim[2]) {
+						Gt <- Gtdeterm + if(is.null(estimates$eq2$dof)) rnorm(1, sd=estimates$eq2$sigma) 
+								else estimates$eq2$sigma*rt(1,estimates$eq2$dof)
+					}
 				}
 				Mtraj[time,itraj] <- trajectoriesF[time,itraj] - Gt
 				Gprev <- Gt
