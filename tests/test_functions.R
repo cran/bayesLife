@@ -36,7 +36,7 @@ test.estimate.mcmc <- function(compression='None') {
 	# run MCMC for an aggregation
 	test.name <- 'estimating MCMC for extra areas'
 	start.test(test.name)
-	data.dir <- file.path(.find.package("bayesLife"), 'data')
+	data.dir <- file.path(find.package("bayesLife"), 'data')
 	m <- run.e0.mcmc.extra(sim.dir=sim.dir, 
 					my.e0.file=file.path(data.dir, 'my_e0_template.txt'), burnin=0)
 	stopifnot(is.element(900, m$meta$regions$country_code)) # 'World' should be included
@@ -98,6 +98,11 @@ test.estimate.mcmc <- function(compression='None') {
 	stopifnot(all(mod.projs[4:6, c(1,3:dim(projs)[2])]==projs[4:6, c(1,3:dim(projs)[2])]+shift))
 	stopifnot(all(mod.projs[c(1:3,7:19), c(1,3:dim(projs)[2])]==projs[c(1:3,7:19), c(1,3:dim(projs)[2])]))
 	test.ok(test.name)
+	
+	test.name <- 'converting trajectories'
+	start.test(test.name)
+	convert.e0.trajectories(sim.dir, n=10)
+	test.ok(test.name)
 	unlink(sim.dir, recursive=TRUE)
 }
 
@@ -124,7 +129,7 @@ test.estimate.mcmc.with.suppl.data <- function(compression='None') {
 	# run MCMC for an aggregation
 	test.name <- 'estimating MCMC for extra areas with supplemental data'
 	start.test(test.name)
-	data.dir <- file.path(.find.package("bayesLife"), 'data')
+	data.dir <- file.path(find.package("bayesLife"), 'data')
 	m <- run.e0.mcmc.extra(sim.dir=sim.dir, 
 					my.e0.file=file.path(data.dir, 'my_e0_template.txt'), burnin=0)
 	stopifnot(is.element(900, m$meta$regions$country_code)) # 'World' should be included
@@ -146,7 +151,7 @@ test.estimate.mcmc.with.suppl.data <- function(compression='None') {
 test.existing.simulation <- function() {
 	test.name <- 'retrieving MCMC results'
 	start.test(test.name)
-	sim.dir <- file.path(.find.package("bayesLife"), "ex-data", 'bayesLife.output')
+	sim.dir <- file.path(find.package("bayesLife"), "ex-data", 'bayesLife.output')
 	m <- get.e0.mcmc(sim.dir, low.memory=FALSE, chain.ids=c(1,2))
 	stopifnot(length(m$mcmc.list)==2)
 	stopifnot(dim(m$mcmc.list[[1]]$traces)[1]==31) # because the chains are thinned by two + init value (i.e. 60/2 + 1)
@@ -154,7 +159,7 @@ test.existing.simulation <- function() {
 	#summary(m)
 	#summary(e0.mcmc(m, 1), par.names.cs=NULL)
 	stopifnot(bayesTFR:::get.total.iterations(m$mcmc.list) == 120)
-	stopifnot(bayesTFR:::get.stored.mcmc.length(m$mcmc.list, burnin=30) == 30)
+	stopifnot(bayesTFR:::get.stored.mcmc.length(m$mcmc.list, burnin=31) == 30)
 	test.ok(test.name)
 	
 	test.name <- 'retrieving projection results'
@@ -173,7 +178,7 @@ test.existing.simulation <- function() {
 test.DLcurve <- function() {
 	test.name <- 'plotting DL curves'
 	start.test(test.name)
-	sim.dir <- file.path(.find.package("bayesLife"), "ex-data", 'bayesLife.output')
+	sim.dir <- file.path(find.package("bayesLife"), "ex-data", 'bayesLife.output')
 	m <- get.e0.mcmc(sim.dir)
 	filename <- tempfile()
 	png(filename=filename)
@@ -188,7 +193,7 @@ test.DLcurve <- function() {
 test.e0trajectories <- function() {
 	test.name <- 'plotting e0 trajectories'
 	start.test(test.name)
-	sim.dir <- file.path(.find.package("bayesLife"), "ex-data", 'bayesLife.output')
+	sim.dir <- file.path(find.package("bayesLife"), "ex-data", 'bayesLife.output')
 	pred <- get.e0.prediction(sim.dir=sim.dir)
 	filename <- tempfile()
 	png(filename=filename)
@@ -209,7 +214,7 @@ test.e0trajectories <- function() {
 test.plot.all <- function() {
 	test.name <- 'plotting e0 trajectories and DL curves for all countries'
 	start.test(test.name)
-	sim.dir <- file.path(.find.package("bayesLife"), "ex-data", 'bayesLife.output')
+	sim.dir <- file.path(find.package("bayesLife"), "ex-data", 'bayesLife.output')
 	pred <- get.e0.prediction(sim.dir=sim.dir)
 	mc <- get.e0.mcmc(sim.dir)
 	dir <- tempfile()
@@ -228,7 +233,7 @@ test.plot.all <- function() {
 test.plot.density <- function() {
 	test.name <- 'plotting parameter density'
 	start.test(test.name)
-	sim.dir <- file.path(.find.package("bayesLife"), "ex-data", 'bayesLife.output')
+	sim.dir <- file.path(find.package("bayesLife"), "ex-data", 'bayesLife.output')
 	pred <- get.e0.prediction(sim.dir=sim.dir)
 	filename <- tempfile()
 	png(filename=filename)
@@ -243,7 +248,7 @@ test.plot.density <- function() {
 test.plot.map <- function() {
 	test.name <- 'creating e0 maps'
 	start.test(test.name)
-	sim.dir <- file.path(.find.package("bayesLife"), "ex-data", 'bayesLife.output')
+	sim.dir <- file.path(find.package("bayesLife"), "ex-data", 'bayesLife.output')
 	pred <- get.e0.prediction(sim.dir=sim.dir)
 	filename <- tempfile()
 	e0.map(pred, year=2098, device='png', device.args=list(filename=filename))
@@ -255,7 +260,7 @@ test.plot.map <- function() {
 	
 	test.name <- 'creating e0 maps of observed data'
 	start.test(test.name)
-	sim.dir <- file.path(.find.package("bayesLife"), "ex-data", 'bayesLife.output')
+	sim.dir <- file.path(find.package("bayesLife"), "ex-data", 'bayesLife.output')
 	pred <- get.e0.prediction(sim.dir=sim.dir)
 	filename <- tempfile()
 	e0.map(pred, year=1974, device='png', device.args=list(filename=filename))
@@ -267,7 +272,7 @@ test.plot.map <- function() {
 	
 	test.name <- 'creating parameter maps'
 	start.test(test.name)
-	sim.dir <- file.path(.find.package("bayesLife"), "ex-data", 'bayesLife.output')
+	sim.dir <- file.path(find.package("bayesLife"), "ex-data", 'bayesLife.output')
 	pred <- get.e0.prediction(sim.dir=sim.dir)
 	filename <- tempfile()
 	e0.map(pred, par.name='z.c', device='png', device.args=list(filename=filename))
@@ -281,17 +286,17 @@ test.plot.map <- function() {
 test.get.parameter.traces <- function() {
 	test.name <- 'getting parameter traces'
 	start.test(test.name)
-	sim.dir <- file.path(.find.package("bayesLife"), "ex-data", 'bayesLife.output')
+	sim.dir <- file.path(find.package("bayesLife"), "ex-data", 'bayesLife.output')
 	m <- get.e0.mcmc(sim.dir, low.memory=TRUE)
-	traces <- get.e0.parameter.traces(m$mcmc.list, burnin=20, 
+	traces <- get.e0.parameter.traces(m$mcmc.list, burnin=21, 
 					thinning.index=c(4, 21, 39))
 	stopifnot(nrow(traces)==3)
-	m.check <- get.e0.mcmc(sim.dir, low.memory=FALSE, burnin=20)
+	m.check <- get.e0.mcmc(sim.dir, low.memory=FALSE, burnin=21)
 	stopifnot(traces[1,'omega']==m.check$mcmc.list[[1]]$traces[4,'omega'])
 	# indices 21 and 39 in the collapsed traces correspond to indices 1 and 19, respectively, in chain 2
 	stopifnot(all(traces[c(2,3),'omega']==m.check$mcmc.list[[2]]$traces[c(1,19),'omega']))
 	
-	traces <- get.e0.parameter.traces(m$mcmc.list, burnin=20, thin=8)
+	traces <- get.e0.parameter.traces(m$mcmc.list, burnin=21, thin=8)
 	# original thin is 2, so here we thin additionally by 4 (2*20/4=10) 
 	stopifnot(nrow(traces)==10)
 	stopifnot(traces[2,'z']==m.check$mcmc.list[[1]]$traces[5,'z']) #(4+1)

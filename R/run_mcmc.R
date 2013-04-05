@@ -1,4 +1,4 @@
-run.e0.mcmc <- function(sex=c("Female", "Male"), nr.chains=3, iter=100000, 
+run.e0.mcmc <- function(sex=c("Female", "Male"), nr.chains=3, iter=160000, 
 							output.dir=file.path(getwd(), 'bayesLife.output'), 
                          thin=10, replace.output=FALSE,
                          start.year=1873, present.year=2010, wpp.year=2010,
@@ -12,29 +12,29 @@ run.e0.mcmc <- function(sex=c("Female", "Male"), nr.chains=3, iter=100000,
 						 lambda.ini=list(NULL, NULL, NULL, NULL), 
 						 lambda.k.ini = NULL, lambda.z.ini=NULL, omega.ini = NULL,
 						 Triangle.ini.low=c(10, 30, 0.1, 10), Triangle.ini.up=c(30, 50, 10, 30),
-						 k.ini.low=1, k.ini.up=5, z.ini.low=0.0001, z.ini.up=1.1,
-						 lambda.ini.low=c(0.0001, 0.0001, 0.0001, 0.0001), 
+						 k.ini.low=3, k.ini.up=5, z.ini.low=0.0001, z.ini.up=1.1,
+						 lambda.ini.low=c(0.01, 0.01, 0.01, 0.01), 
 						 lambda.ini.up=c(0.1, 0.1, 0.1, 0.1), 
-						 lambda.k.ini.low = 0.1, lambda.k.ini.up = 1, 
+						 lambda.k.ini.low = 0.3, lambda.k.ini.up = 1, 
 						 lambda.z.ini.low=1, lambda.z.ini.up=40,
 						 omega.ini.low = 0.1, omega.ini.up=5, 
 						 Triangle.prior.low=c(0, 0, -20, 0), Triangle.prior.up=c(100, 100, 100, 100),
 						 k.prior.low=0, k.prior.up=10, z.prior.low=0, z.prior.up=1.15,
 						 Triangle.c.ini.norm = list(round(Triangle.ini.low + (Triangle.ini.up - Triangle.ini.low)/2),c(2,2,2,2)), 
-						 k.c.ini.norm=c(round(k.ini.low + (k.ini.up - k.ini.low)/2),2), 
+						 k.c.ini.norm=c(round(k.ini.low + (k.ini.up - k.ini.low)/2), 2), 
 						 z.c.ini.norm=c(round(z.ini.low + (z.ini.up - z.ini.low)/2, 2), 0.2),
 						 Triangle.c.prior.low=c(0, 0, -20, 0), Triangle.c.prior.up=c(100, 100, 100, 100),
 						 k.c.prior.low=0, k.c.prior.up=10, z.c.prior.low=0, z.c.prior.up=1.15,
-						 Triangle.c.width = c(4, 6, 3, 4), k.c.width=1, z.c.width=0.2,
 						 country.overwrites = NULL,
-						 #Triangle.c.width = c(5, 5, 5, 5), k.c.width=0.5, z.c.width=0.06,
 						 nu=4, dl.p1=9, dl.p2=9, sumTriangle.lim = c(30, 110), constant.variance=FALSE,
                          seed = NULL, parallel=FALSE, nr.nodes=nr.chains, compression.type='None',
-                         auto.conf = list(max.loops=5, iter=100000, iter.incr=20000, nr.chains=3, thin=120, burnin=20000),
-						 verbose=FALSE, verbose.iter = 10, ...) {
+                         auto.conf = list(max.loops=5, iter=160000, iter.incr=20000, nr.chains=3, thin=225, burnin=10000),
+						 verbose=FALSE, verbose.iter = 100, ...) {
 						 	
 	get.init.values.between.low.and.up <- function(low, up)
-		ifelse(rep(nr.chains==1, nr.chains), (low+up)/2, seq(low, to=up, length=nr.chains))
+		ifelse(rep(nr.chains==1, nr.chains), (low+up)/2, #seq(low, to=up, length=nr.chains)
+			runif(nr.chains, low, up)
+		)
 		
 	if(file.exists(output.dir)) {
 		if(length(list.files(output.dir)) > 0 & !replace.output)
@@ -100,8 +100,7 @@ run.e0.mcmc <- function(sex=c("Female", "Male"), nr.chains=3, iter=100000,
                                         k.c.ini.norm=k.c.ini.norm, z.c.ini.norm=z.c.ini.norm,
                                         Triangle.c.prior.low=Triangle.c.prior.low, Triangle.c.prior.up=Triangle.c.prior.up, 
                                         k.c.prior.low=k.c.prior.low, k.c.prior.up=k.c.prior.up, 
-                                        z.c.prior.low=z.c.prior.low, z.c.prior.up=z.c.prior.up, 
-                                        Triangle.c.width=Triangle.c.width, k.c.width=k.c.width, z.c.width=z.c.width,
+                                        z.c.prior.low=z.c.prior.low, z.c.prior.up=z.c.prior.up,
                                         country.overwrites=country.overwrites, 
                                         nu=nu, dl.p1=dl.p1, dl.p2=dl.p2, sumTriangle.lim=sumTriangle.lim, 
                                         constant.variance=constant.variance,
@@ -111,13 +110,27 @@ run.e0.mcmc <- function(sex=c("Female", "Male"), nr.chains=3, iter=100000,
     
     # propagate initial values for all chains if needed
     starting.values <- list()
-    for (var in c('Triangle.ini', 'lambda.ini')) 
+    for (var in c('Triangle.ini', 'lambda.ini')) {
     	if(!is.list(get(var))) assign(var, list(get(var)))
-    for (var in c('Triangle.ini', 'k.ini', 'z.ini', 'lambda.ini', 'lambda.k.ini', 'lambda.z.ini', 'omega.ini', 'iter')) {
+    	for(i in 1:4) {
+    		if (length(get(var)[[i]]) < nr.chains) {
+        		if (length(get(var)[[i]]) == 1) {
+            		assign(paste(var,'[[',i,']]', sep=''), rep(get(var)[[i]], nr.chains))
+            	} else {
+            		warning(var, '[[',i,']]', ' has the wrong length. Either 1 or ', nr.chains, 
+                                ' is allowed.\nValue set to ', get(var)[[i]][1], ' for all chains.')
+                    assign(paste(var,'[[',i,']]', sep=''), rep(get(var)[[i]][1], nr.chains))
+               }
+            }
+        }
+        starting.values[[var]] <- get(var)
+    }
+    for (var in c('k.ini', 'z.ini', 'lambda.k.ini', 'lambda.z.ini', 'omega.ini', 'iter')) {
     	if (length(get(var)) < nr.chains) {
         	if (length(get(var)) == 1) {
             	assign(var, rep(get(var), nr.chains))
             } else {
+            	stop('')
             	warning(var, ' has the wrong length. Either 1 or ', nr.chains, 
                                 ' is allowed.\nValue set to ', get(var)[1], ' for all chains.')
                                 assign(var, rep(get(var)[1], nr.chains))
@@ -606,7 +619,7 @@ e0.mcmc.ini.extra <- function(mcmc, countries, index.replace=NULL) {
 		mcmc$z.c[index.replace] <- pmin(pmax(rnorm(nreplace, mcmc$meta$z.c.ini.norm[1], 
 							sd=mcmc$meta$z.c.ini.norm[2]), mcmc$meta$z.c.prior.low), mcmc$meta$z.c.prior.up)
 	}
-	
+	samplpars <- mcmc$meta$country.bounds
 	if(nr.countries.extra > nreplace) {
 		nextra <- nr.countries.extra-nreplace
 		eidx <- (ncol(mcmc$Triangle.c)+1):(ncol(mcmc$Triangle.c)+nextra)
@@ -614,11 +627,12 @@ e0.mcmc.ini.extra <- function(mcmc, countries, index.replace=NULL) {
 		for (i in 1:4)		
 			mcmc$Triangle.c[i,eidx] <- pmin(pmax(rnorm(nextra, mean=mcmc$meta$Triangle.c.ini.norm[[1]][i], 
 										sd=mcmc$meta$Triangle.c.ini.norm[[2]][i]),
-										mcmc$meta$Triangle.c.prior.low[i]), mcmc$meta$Triangle.c.prior.up[i])
+										samplpars[[paste('Triangle_', i, '.c.prior.low', sep='')]][eidx]), 
+										samplpars[[paste('Triangle_', i, '.c.prior.up', sep='')]][eidx])
 		mcmc$k.c <- c(mcmc$k.c, pmin(pmax(rnorm(nextra, mcmc$meta$k.c.ini.norm[1], 
-							sd=mcmc$meta$k.c.ini.norm[2]), mcmc$meta$k.c.prior.low), mcmc$meta$k.c.prior.up))
+							sd=mcmc$meta$k.c.ini.norm[2]), samplpars$k.c.prior.low[eidx]), samplpars$k.c.prior.up[eidx]))
 		mcmc$z.c <- c(mcmc$z.c, pmin(pmax(rnorm(nextra, mcmc$meta$z.c.ini.norm[1], 
-							sd=mcmc$meta$z.c.ini.norm[2]), mcmc$meta$z.c.prior.low), mcmc$meta$z.c.prior.up))
+							sd=mcmc$meta$z.c.ini.norm[2]), samplpars$z.c.prior.low[eidx]), samplpars$z.c.prior.up[eidx]))
 	}
 	return(mcmc)
 }
