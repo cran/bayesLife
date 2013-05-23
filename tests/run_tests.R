@@ -1,7 +1,8 @@
 library(bayesLife)
 source('test_functions.R')
 
-test.get.wpp.data()
+test.get.wpp.data(2008)
+test.get.wpp.data(2010)
 test.existing.simulation()
 test.e0trajectories()
 test.get.parameter.traces()
@@ -10,7 +11,7 @@ test.get.parameter.traces()
 ## Time-expensive tests
 # test.DLcurve()
 # test.plot.density()
-# test.plot.map()
+# #test.plot.map()
 # test.estimate.mcmc()
 # test.estimate.mcmc(compression='xz')
 # test.estimate.mcmc.with.suppl.data()

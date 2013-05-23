@@ -13,9 +13,9 @@ using a Bayesian hierarchical model and the United Nations demographic time seri
 \tabular{ll}{
 Package: \tab bayesLife\cr
 Type: \tab Package\cr
-Version: \tab 1.1-3\cr
-Date: \tab 2013-4-5\cr
-Depends: \tab R (>= 2.14.2), bayesTFR\cr
+Version: \tab 2.0-0\cr
+Date: \tab 2013-5-23\cr
+Depends: \tab R (>= 2.14.2), bayesTFR, wpp2010\cr
 License: \tab GPL (>= 2)\cr
 URL: \tab \url{http://bayespop.csss.washington.edu}\cr
 }
@@ -41,6 +41,8 @@ A number of functions analyzing results are included in the package:
 For MCMC diagnostics, function \link{e0.coda.list.mcmc} creates an object of type \dQuote{mcmc.list} that can be used with the \pkg{coda} package.  Furthermore, function \link{e0.diagnose} analyzes the MCMCs using the Raftery diagnostics implemented in the \pkg{coda} package and gives information about parameters that did not converge. Function \link{e0.dl.coverage} computes a goodness of fit of the double logistic function.
 
 Existing simulation results can be accessed using the \link{get.e0.mcmc} function.  An existing prediction can be accessed via \link{get.e0.prediction}.
+
+Historical data are taken from one of the packages \pkg{wpp2008}, \pkg{wpp2010} or \pkg{wpp2012}, depending on users settings.
 
 }
 

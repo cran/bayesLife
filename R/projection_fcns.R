@@ -1,4 +1,5 @@
-
+if(getRversion() >= "2.15.1") utils::globalVariables("loess_sd")
+data(loess_sd, envir=environment())
 
 e0.proj.le.SDPropToLoess<-function(x,l.start,kap,n.proj=11, p1=9, p2=9, const.var=FALSE){
   proj<-NULL
@@ -133,7 +134,6 @@ make.e0.prediction <- function(mcmc.set, start.year=NULL, end.year=2100, replace
 							    save.as.ascii=1000, output.dir = NULL, write.summary.files=TRUE, 
 							    create.thinned.mcmc.extra=FALSE,
 							    verbose=verbose){
-	data(loess_sd)
 	# if 'countries' is given, it is an index
 	present.year <- if(is.null(start.year)) mcmc.set$meta$present.year else start.year - 5
 	nr_project <- length(seq(present.year+5, end.year, by=5))
@@ -353,7 +353,7 @@ convert.e0.trajectories <- function(dir=file.path(getwd(), 'bayesLife.output'),
 }
 
 write.e0.projection.summary <- function(dir=file.path(getwd(), 'bayesLife.output'), 
-									 output.dir=NULL, revision=NULL) {
+									 output.dir=NULL, revision=NULL, adjusted=FALSE) {
 # Writes four prediction summary files, one in a user-friendly format, one in a UN-format, one for each sex.
 	pred <- get.e0.prediction(sim.dir=dir)
 	predsex <- pred$mcmc.set$meta$sex
@@ -368,13 +368,14 @@ write.e0.projection.summary <- function(dir=file.path(getwd(), 'bayesLife.output
 			else outdir <- output.dir
 		}
 		if(!file.exists(outdir)) dir.create(outdir, recursive=TRUE)
-		do.write.e0.projection.summary(preds[[sex]], outdir, sex=sex, revision=revision)
+		do.write.e0.projection.summary(preds[[sex]], outdir, sex=sex, revision=revision, adjusted=adjusted)
 	}
 }
 		
-do.write.e0.projection.summary <- function(pred, output.dir, sex=NULL, revision=NULL) {
+do.write.e0.projection.summary <- function(pred, output.dir, sex=NULL, revision=NULL, adjusted=FALSE) {
 	if (is.null(sex)) sex <- pred$mcmc.set$meta$sex
-	bayesTFR:::do.write.projection.summary(pred, output.dir, revision=revision, indicator.id=10, sex.id=c(M=1,F=2)[sex])
+	bayesTFR:::do.write.projection.summary(pred, output.dir, revision=revision, indicator.id=10, 
+				sex.id=c(M=1,F=2)[sex], adjusted=adjusted)
 }
 				
 get.traj.ascii.header.bayesLife.mcmc.meta <- function(meta, ...) 
@@ -391,21 +392,35 @@ get.e0.reconstructed <- function(data, meta) {
 	return(if(is.null(data)) meta$e0.matrix.all else data)
 }
 
-e0.median.reset <- function(sim.dir, countries) {
-	for(country in countries) pred <- e0.median.shift(sim.dir, country, reset=TRUE)
+e0.median.reset <- function(sim.dir, countries, joint.male=FALSE) {
+	for(country in countries) pred <- e0.median.shift(sim.dir, country, reset=TRUE, joint.male=joint.male)
 	invisible(pred)
 }
 
 get.e0.shift <- function(country.code, pred) return(bayesTFR:::get.tfr.shift(country.code, pred))
 
-e0.median.shift <- function(sim.dir, country, reset=FALSE, shift=0, from=NULL, to=NULL) {
-	invisible(bayesTFR:::.bdem.median.shift(type='e0', sim.dir=sim.dir, country=country, reset=reset, 
-				shift=shift, from=from, to=to))
+e0.median.shift <- function(sim.dir, country, reset=FALSE, shift=0, from=NULL, to=NULL, joint.male=FALSE) {
+	pred <- get.e0.prediction(sim.dir, joint.male=joint.male)
+	new.pred <- bayesTFR:::.bdem.median.shift(pred, type='e0', country=country, reset=reset, 
+				shift=shift, from=from, to=to)
+	if(joint.male) {
+		predF <- get.e0.prediction(sim.dir)
+		predF$joint.male <- new.pred
+		store.bayesLife.prediction(predF)
+	} else store.bayesLife.prediction(new.pred)
+	invisible(new.pred)
 }
 
-e0.median.set <- function(sim.dir, country, values, years=NULL) {
-	invisible(bayesTFR:::.bdem.median.set(type='e0', sim.dir=sim.dir, country=country, 
-				values=values, years=years))
+e0.median.set <- function(sim.dir, country, values, years=NULL, joint.male=FALSE) {
+	pred <- get.e0.prediction(sim.dir, joint.male=joint.male)
+	new.pred <- bayesTFR:::.bdem.median.set(pred, type='e0', country=country, 
+								values=values, years=years)
+	if(joint.male) {
+		predF <- get.e0.prediction(sim.dir)
+		predF$joint.male <- new.pred
+		store.bayesLife.prediction(predF)
+	} else store.bayesLife.prediction(new.pred)
+	invisible(new.pred)
 }
 
 e0.jmale.estimate <- function(mcmc.set, countries.index=NULL, 
