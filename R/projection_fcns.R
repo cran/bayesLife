@@ -30,7 +30,7 @@ e0.predict <- function(mcmc.set=NULL, end.year=2100, sim.dir=file.path(getwd(), 
 		if (ldiag == 0) stop('There is no diagnostics available. Use manual settings of "nr.traj" or "thin".')
 		use.nr.traj <- use.burnin <- rep(NA, ldiag)
 		for(idiag in 1:ldiag) {
-			if (bayesTFR:::has.mcmc.converged(diag.list[[idiag]])) {
+			if (bayesTFR::has.mcmc.converged(diag.list[[idiag]])) {
 				use.nr.traj[idiag] <- diag.list[[idiag]]$use.nr.traj
 				use.burnin[idiag] <- diag.list[[idiag]]$burnin
 			}
@@ -397,7 +397,7 @@ e0.median.reset <- function(sim.dir, countries, joint.male=FALSE) {
 	invisible(pred)
 }
 
-get.e0.shift <- function(country.code, pred) return(bayesTFR:::get.tfr.shift(country.code, pred))
+get.e0.shift <- function(country.code, pred) return(bayesTFR::get.tfr.shift(country.code, pred))
 
 e0.median.shift <- function(sim.dir, country, reset=FALSE, shift=0, from=NULL, to=NULL, joint.male=FALSE) {
 	pred <- get.e0.prediction(sim.dir, joint.male=joint.male)
@@ -428,7 +428,6 @@ e0.jmale.estimate <- function(mcmc.set, countries.index=NULL,
 								min.e0.eq2 = 80, estDof.eq2 = TRUE, start.eq2 = list(dof = 2), 
 								constant.gap.eq2=TRUE, my.e0.file=NULL, verbose=FALSE) {
 	# Estimate coefficients for joint prediction of female and male e0
-	require(hett)
 	unblock.gtk('bDem.e0pred', list(bDem.e0pred.status='estimating joint male'))
 	if (is.null(countries.index)) countries.index <- 1:get.nr.countries.est(mcmc.set$meta)
 	e0f.data <- get.data.matrix(mcmc.set$meta)[,countries.index]
