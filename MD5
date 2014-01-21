@@ -1,5 +1,5 @@
-9faf00c703e2630e580544f5de674be7 *ChangeLog
-51705ad86ca7b83d5b28a679118bf5d0 *DESCRIPTION
+0393a65600894162fdd64bf6d1fc6f92 *ChangeLog
+4640b8657d6307f96f3c93519965f1ae *DESCRIPTION
 b644f0db23c865ca5e750a8be55a9ac6 *NAMESPACE
 9ceca0a41b0e50575ab91bf5dcc2a5aa *R/diagnostics.R
 7033eaf5b6e51b4a5e60dc59682b7eb3 *R/functions.R
@@ -7,7 +7,7 @@ b644f0db23c865ca5e750a8be55a9ac6 *NAMESPACE
 d461342157830e576d7fa47e8219b16c *R/mcmc_estimate.R
 94bcbfc98b7f120349ed4d8b33c66fbd *R/mcmc_storage.R
 423aab35a1e59b433f2c7d47f3f0ff93 *R/plot_functions.R
-5092bbc1b4017b8657ad34fad3736a13 *R/projection_fcns.R
+1b70846053fc465724d039f1cfd68ae3 *R/projection_fcns.R
 00fbda36dde3fc394bc9ca6719cb380a *R/run_mcmc.R
 5ec276276f23f30f37c8d28b50202a87 *R/wpp_data.R
 061dfd285749204f28c83f8102ca347b *R/zzz.R
@@ -1152,7 +1152,7 @@ cb714ed2c5c44cc64a7be1890cadd972 *inst/ex-data/bayesLife.output/predictions/traj
 eb7332ad72ee8b66c8b9a390178f2c54 *inst/extdata/my_e0_template.txt
 8680136dbf6a30e1b76cd595cf344a6b *man/GoF.dl.Rd
 db0b70694388acf0a043e531f195ab22 *man/bayesLife-internal.Rd
-84b2c2e943f0f4ffde27c55abcfd7e50 *man/bayesLife-package.Rd
+de43a4d2a1e8820f8314370159d96def *man/bayesLife-package.Rd
 3c4036b3e433c0bf5645855806211a2e *man/bayesLife.mcmc.Rd
 6736c136a22a784d2afe8e319c57735e *man/bayesLife.mcmc.meta.Rd
 d42375b0e4aa1b5f472ed9e9deb1fa6b *man/convert.trajectories.Rd
@@ -1177,8 +1177,8 @@ d200a87de20bac01bdd96b13e85b0aa2 *man/e0.predict.extra.Rd
 288044d0def114a4af6c9796628e3aa8 *man/get.e0.trajectories.Rd
 b6a21189e4b8d5a8ff9eeac1067546c2 *man/get.thinned.e0.mcmc.Rd
 d7899efa27a105b45afa60679792e443 *man/include.Rd
-4317a61e2f41b718ff8cbdf9852dfbf2 *man/joint.male.estimate.Rd
-93777c1343c98fe3b427a3767feb2e4b *man/joint.male.predict.Rd
+04133c403042b0bb4ad84f650ff419f9 *man/joint.male.estimate.Rd
+fd589079de49a7cda3d41cbd067894ef *man/joint.male.predict.Rd
 0d1736ad259c48accb9e3fe53391f6b1 *man/run.e0.mcmc.Rd
 5a28a1682fd396131e3a7540abc007a4 *man/run.e0.mcmc.extra.Rd
 4016b2b984988b1b7675be4094160a96 *man/summary-convergence.Rd
