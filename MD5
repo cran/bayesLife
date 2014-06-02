@@ -1,12 +1,12 @@
-0393a65600894162fdd64bf6d1fc6f92 *ChangeLog
-4640b8657d6307f96f3c93519965f1ae *DESCRIPTION
+8f4653f621ef0054b8cbd73adcb46d34 *ChangeLog
+bddc6eb316524a69342e1b135d8b60d9 *DESCRIPTION
 b644f0db23c865ca5e750a8be55a9ac6 *NAMESPACE
 9ceca0a41b0e50575ab91bf5dcc2a5aa *R/diagnostics.R
 7033eaf5b6e51b4a5e60dc59682b7eb3 *R/functions.R
 5a4f335a38e3e1b1f8062198a69e6201 *R/get_outputs.R
 d461342157830e576d7fa47e8219b16c *R/mcmc_estimate.R
 94bcbfc98b7f120349ed4d8b33c66fbd *R/mcmc_storage.R
-423aab35a1e59b433f2c7d47f3f0ff93 *R/plot_functions.R
+cd64e2b53bc6ff8d1f964777dcc8da68 *R/plot_functions.R
 1b70846053fc465724d039f1cfd68ae3 *R/projection_fcns.R
 00fbda36dde3fc394bc9ca6719cb380a *R/run_mcmc.R
 5ec276276f23f30f37c8d28b50202a87 *R/wpp_data.R
@@ -1152,7 +1152,7 @@ cb714ed2c5c44cc64a7be1890cadd972 *inst/ex-data/bayesLife.output/predictions/traj
 eb7332ad72ee8b66c8b9a390178f2c54 *inst/extdata/my_e0_template.txt
 8680136dbf6a30e1b76cd595cf344a6b *man/GoF.dl.Rd
 db0b70694388acf0a043e531f195ab22 *man/bayesLife-internal.Rd
-de43a4d2a1e8820f8314370159d96def *man/bayesLife-package.Rd
+c500f14a8e4005c94c256a368bec56e9 *man/bayesLife-package.Rd
 3c4036b3e433c0bf5645855806211a2e *man/bayesLife.mcmc.Rd
 6736c136a22a784d2afe8e319c57735e *man/bayesLife.mcmc.meta.Rd
 d42375b0e4aa1b5f472ed9e9deb1fa6b *man/convert.trajectories.Rd
