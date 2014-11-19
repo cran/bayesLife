@@ -1,5 +1,5 @@
-2eddb85e4ce523db51b49452d896f9d6 *ChangeLog
-ad6162095734406425875420a33919da *DESCRIPTION
+8ebc0a9e06b9b35d8e6f66ab671068d5 *ChangeLog
+ce1fd0d73168c7ff45868f8d71f9cc2f *DESCRIPTION
 b644f0db23c865ca5e750a8be55a9ac6 *NAMESPACE
 9ceca0a41b0e50575ab91bf5dcc2a5aa *R/diagnostics.R
 7033eaf5b6e51b4a5e60dc59682b7eb3 *R/functions.R
@@ -7,8 +7,8 @@ b644f0db23c865ca5e750a8be55a9ac6 *NAMESPACE
 d461342157830e576d7fa47e8219b16c *R/mcmc_estimate.R
 94bcbfc98b7f120349ed4d8b33c66fbd *R/mcmc_storage.R
 cd64e2b53bc6ff8d1f964777dcc8da68 *R/plot_functions.R
-1b70846053fc465724d039f1cfd68ae3 *R/projection_fcns.R
-97f43611568e2c820805398409ed831b *R/run_mcmc.R
+5228a9fe6e21dbccdfccb0ac359d1f87 *R/projection_fcns.R
+e4039bf655565d35a1f8c39597f946d7 *R/run_mcmc.R
 5ec276276f23f30f37c8d28b50202a87 *R/wpp_data.R
 061dfd285749204f28c83f8102ca347b *R/zzz.R
 e639d9b05b77958b5e26f0db0ea7f60a *data/include_2008.R
@@ -1149,13 +1149,13 @@ aa523e936bc38b102effe3103ce79173 *inst/ex-data/bayesLife.output/predictions/traj
 23104cecf8f585ab285f77fb4d82f6db *inst/ex-data/bayesLife.output/predictions/traj_country887.rda
 2669c60514e8cbac61a967edbd965a7d *inst/ex-data/bayesLife.output/predictions/traj_country90.rda
 cb714ed2c5c44cc64a7be1890cadd972 *inst/ex-data/bayesLife.output/predictions/traj_country96.rda
-eb7332ad72ee8b66c8b9a390178f2c54 *inst/extdata/my_e0_template.txt
+e88da1476208676c62d913086f97040b *inst/extdata/my_e0_template.txt
 8680136dbf6a30e1b76cd595cf344a6b *man/GoF.dl.Rd
 db0b70694388acf0a043e531f195ab22 *man/bayesLife-internal.Rd
-fb5d237e49ca5c758b0949469e5f5079 *man/bayesLife-package.Rd
+827fcf094cac601a11483571fb05df67 *man/bayesLife-package.Rd
 3c4036b3e433c0bf5645855806211a2e *man/bayesLife.mcmc.Rd
 6736c136a22a784d2afe8e319c57735e *man/bayesLife.mcmc.meta.Rd
-d42375b0e4aa1b5f472ed9e9deb1fa6b *man/convert.trajectories.Rd
+ce5af54a75963ddd29d70e40f6964cf3 *man/convert.trajectories.Rd
 26d9064455598ee2ff3848560c60b0c7 *man/e0.DLcurve.plot.Rd
 41dd2fbefa6469871017499ea006d34d *man/e0.coda.mcmc.list.Rd
 e2853c9bdc592604a25e722b1196cc77 *man/e0.diagnose.Rd
@@ -1186,5 +1186,5 @@ fd589079de49a7cda3d41cbd067894ef *man/joint.male.predict.Rd
 6b25f01ed87edc203c0702e2314b57d3 *man/summary-prediction.Rd
 74c4d860dee7fba81c7925e69345172e *man/write.projection.summary.Rd
 8ef5357d98442ceeb9bd90d5ff894bab *src/functions.c
-009f044e47a54b186f1da1085028df15 *tests/run_tests.R
-dea792a870e5f534969d642a54d24944 *tests/test_functions.R
+d28a9bbc0ee2772dcbae53e7bb925d2c *tests/run_tests.R
+3c9d871c4ed5e1578d6573aec9581a22 *tests/test_functions.R
