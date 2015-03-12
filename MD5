@@ -1,5 +1,5 @@
-8ebc0a9e06b9b35d8e6f66ab671068d5 *ChangeLog
-ce1fd0d73168c7ff45868f8d71f9cc2f *DESCRIPTION
+e77c3785bb5a7b301f653adfbd921ce0 *ChangeLog
+082698cd22ff5c9cd4e7ed7dbaeb0ddf *DESCRIPTION
 b644f0db23c865ca5e750a8be55a9ac6 *NAMESPACE
 9ceca0a41b0e50575ab91bf5dcc2a5aa *R/diagnostics.R
 7033eaf5b6e51b4a5e60dc59682b7eb3 *R/functions.R
@@ -7,9 +7,9 @@ b644f0db23c865ca5e750a8be55a9ac6 *NAMESPACE
 d461342157830e576d7fa47e8219b16c *R/mcmc_estimate.R
 94bcbfc98b7f120349ed4d8b33c66fbd *R/mcmc_storage.R
 cd64e2b53bc6ff8d1f964777dcc8da68 *R/plot_functions.R
-5228a9fe6e21dbccdfccb0ac359d1f87 *R/projection_fcns.R
-e4039bf655565d35a1f8c39597f946d7 *R/run_mcmc.R
-5ec276276f23f30f37c8d28b50202a87 *R/wpp_data.R
+fde8082ed59fa062bb41ea5112b2031c *R/projection_fcns.R
+4aab785319000dd6fbcfa81d439b71d7 *R/run_mcmc.R
+512fb3b4b7747ee4a8dbcfdad66eebc1 *R/wpp_data.R
 061dfd285749204f28c83f8102ca347b *R/zzz.R
 e639d9b05b77958b5e26f0db0ea7f60a *data/include_2008.R
 e2f74bf46135442fdf21aa0fc7881e5f *data/include_2008.txt
@@ -1177,10 +1177,10 @@ d200a87de20bac01bdd96b13e85b0aa2 *man/e0.predict.extra.Rd
 288044d0def114a4af6c9796628e3aa8 *man/get.e0.trajectories.Rd
 b6a21189e4b8d5a8ff9eeac1067546c2 *man/get.thinned.e0.mcmc.Rd
 d7899efa27a105b45afa60679792e443 *man/include.Rd
-04133c403042b0bb4ad84f650ff419f9 *man/joint.male.estimate.Rd
-fd589079de49a7cda3d41cbd067894ef *man/joint.male.predict.Rd
-0d1736ad259c48accb9e3fe53391f6b1 *man/run.e0.mcmc.Rd
-5a28a1682fd396131e3a7540abc007a4 *man/run.e0.mcmc.extra.Rd
+75aea87a3684b4f594e02a497267c2bb *man/joint.male.estimate.Rd
+1a1e33cf03c6334977d8a619be7abfd6 *man/joint.male.predict.Rd
+7c262ce4678aab83d85739ec6cc16962 *man/run.e0.mcmc.Rd
+62c0b0bffa486f9e104c78b2aecf96a6 *man/run.e0.mcmc.extra.Rd
 4016b2b984988b1b7675be4094160a96 *man/summary-convergence.Rd
 1c2705e4f043d52d082a3e44e9a3e87c *man/summary-mcmc.Rd
 6b25f01ed87edc203c0702e2314b57d3 *man/summary-prediction.Rd
