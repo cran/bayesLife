@@ -1,4 +1,4 @@
-get.wpp.e0.data <- function(sex='M', start.year=1950, present.year=2010, wpp.year=2012, my.e0.file=NULL, 
+get.wpp.e0.data <- function(sex='M', start.year=1950, present.year=2015, wpp.year=2015, my.e0.file=NULL, 
 							my.locations.file=NULL, verbose=FALSE) {
 	sex <- toupper(sex)
 	if(sex != 'M' && sex != 'F')
@@ -92,7 +92,7 @@ get.wpp.e0.data.for.countries <- function(meta, sex='M', my.e0.file=NULL, my.loc
 	for (i in 1:length(meta$regions$country_code)) { # put countries into the same order as in meta
 		loc_index <- which(data$country_code == meta$regions$country_code[i])
 		if(length(loc_index) <= 0) 
-			stop('Country ', data$country_code[i], ' not found.')
+			stop('Country ', meta$regions$country_code[i], ' not found.')
 		include <- c(include, loc_index)
 	}
 	data_incl <- data[include,]	
