@@ -1,8 +1,8 @@
 Package: bayesLife
 Type: Package
 Title: Bayesian Projection of Life Expectancy
-Version: 3.0-3
-Date: 2016-12-02
+Version: 3.0-4
+Date: 2017-01-07
 Author: Hana Sevcikova, Adrian Raftery, Jennifer Chunn 
 Maintainer: Hana Sevcikova <hanas@uw.edu>
 Description: Making probabilistic projections of life expectancy for all countries of the world, using a Bayesian hierarchical model <doi:10.1007/s13524-012-0193-x>.
@@ -12,6 +12,6 @@ Suggests: wpp2012, wpp2010
 License: GPL (>= 2)
 URL: https://bayespop.csss.washington.edu
 NeedsCompilation: yes
-Packaged: 2016-12-02 21:03:16 UTC; hana
+Packaged: 2017-01-08 02:22:58 UTC; hana
 Repository: CRAN
-Date/Publication: 2016-12-02 22:35:32
+Date/Publication: 2017-01-08 12:07:29
