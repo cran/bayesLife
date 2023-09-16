@@ -1,5 +1,5 @@
-a51b6f2fddf1077d6086d2d2df3b9d13 *ChangeLog
-44ce20a0291f1554a47ea4009736d1ab *DESCRIPTION
+907793d368fa40ff5d71eadc7ba1285a *ChangeLog
+50825eb12b1d14214813747ebfd55d02 *DESCRIPTION
 51af23514453e0458824772714d4ae79 *LICENSE
 ccc79d0c9962ca6fda298c312d51d786 *NAMESPACE
 dbc91b2df665dd17e2d9070c5c8c7125 *R/diagnostics.R
@@ -9,10 +9,10 @@ d5409497fa17cae2cb7cbf773f6067c2 *R/get_outputs.R
 b8f858612a50a70b89ef76b7cc4bc512 *R/mcmc_estimate.R
 0ef0ca2cc011aff2860b7d4245c21dad *R/mcmc_storage.R
 e799a7e87510aafda63b147fa675903a *R/plot_functions.R
-1b7a161bb5c149c9ebb254c26af567cf *R/project_subnat.R
+418a7e29902ab6d9fa41900c143de63f *R/project_subnat.R
 4a2e0e1d16cbeead5fbada2e19ca2e5a *R/projection_fcns.R
-c4d6cbaa6659782a404854e9bf6f5bc4 *R/run_mcmc.R
-e4958d17c17a77ce574b53875c249832 *R/wpp_data.R
+edb0c74f69074d100f17994df4ff866a *R/run_mcmc.R
+a4ce99bca0674e9186f0951b5dadf7db *R/wpp_data.R
 b7bc11ceb8b31a8bb1f388a69c77da08 *R/zzz.R
 e356e8a3b7c261155f7912bfce407b48 *data/DLpriors.rda
 50e004069aa32db21a23815fe2a0e74d *data/include_2010.rda
@@ -756,7 +756,7 @@ e06cc501d1fdb844125d65a22ce14a4f *inst/ex-data/bayesLife.output/predictions/traj
 33d06f2435fb3d7bf9841ba39c571bde *inst/extdata/subnational_e0_template.txt
 8680136dbf6a30e1b76cd595cf344a6b *man/GoF.dl.Rd
 e7da53f13b954c7977f244a1dfd2ad53 *man/bayesLife-internal.Rd
-1c4d723f6ee7cc630ab879abd8232993 *man/bayesLife-package.Rd
+1be17c630e1a8ebc57ade27dd3c1698a *man/bayesLife-package.Rd
 98a45cd8ee1accd0a7ef1651fef0fabf *man/bayesLife.mcmc.Rd
 02501c79c5606d54d2d305776c823e30 *man/bayesLife.mcmc.meta.Rd
 fe42e58fab0d170df86c5d2109dd9a21 *man/compute.loess.Rd
@@ -773,7 +773,7 @@ bbfdf41864d0ac600f8f5d743cccf12e *man/e0.pardensity.plot.Rd
 15e85627beb697b401e97c76640f3145 *man/e0.partraces.plot.Rd
 de96425ea9316e5d0e48feb2cf21a315 *man/e0.predict.Rd
 d200a87de20bac01bdd96b13e85b0aa2 *man/e0.predict.extra.Rd
-7726267466e5eb8ce25ff339e8a18552 *man/e0.predict.subnat.Rd
+5c7ef41fa122448eb7bfe29df8cd4e63 *man/e0.predict.subnat.Rd
 9a1e9e93a918f614bd52fc03607d5a66 *man/e0.raftery.diag.Rd
 5918e1266e6efb3ab1786b84b6ff6934 *man/e0.trajectories.plot.Rd
 1cbc35fb3caafd9f457ad63f221d7601 *man/e0options.Rd
@@ -795,5 +795,6 @@ ba054df0d46d387cdbe295645cf3ef92 *man/summary-mcmc.Rd
 eb6244edcfaffbfd132a21bcf0859891 *man/write.projection.summary.Rd
 10f4f6d593a7b0cb9fa99f4d2e2314fd *src/bayesLife_init.c
 8ef5357d98442ceeb9bd90d5ff894bab *src/functions.c
+09c32ab75ca2d7042f8f3b4d448af17a *tests/last.dump.rda
 25baf29de4cc19dc9a7f03393f6072e5 *tests/run_tests.R
-fbfcd896b14de3be4c7cc7461e81a0ea *tests/test_functions.R
+48f6e18f10c1e3a4b8d331d74b1e4713 *tests/test_functions.R
